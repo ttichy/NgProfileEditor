@@ -13,18 +13,19 @@ app.factory('accelSegmentFactory', function(basicSegmentFactory) {
 	 * @param {[type]} p0 [initial position]
 	 * @param {[type]} v0 [final position]
 	 * @param {[type]} vf [final velocity]
-	 * @param {[type]} j  [jerk as a percent of time]
+	 * @param {[type]} jPct  [jerk as a percent of time]
 	 */
-	factory.MakeFromVelocity= function(t0,tf,p0,v0,vf,j){
+	factory.MakeFromVelocity= function(t0,tf,p0,v0,vf,jPct){
 		
-		if(j<0 || j>1)
+		if(jPct<0 || jPct>1)
 			throw new Error('expecting jerk between <0,1>');
-		var basicSegment;
+		var basicSegment, basicSegment2, basicSegment3;
 		var accelSegment;
+		var coeffs, coeffs1,coeffs2,coeffs3,coeffs4;
 
-		if(j===0){
+		if(jPct===0){
 			// consists of one basic segment
-			var coeffs=[p0,v0,(vf-v0)/(tf-t0),0];
+			coeffs=[p0,v0,(vf-v0)/(tf-t0),0];
 
 			basicSegment = basicSegmentFactory.CreateBasicSegment(t0,tf,coeffs);
 
@@ -32,28 +33,55 @@ app.factory('accelSegmentFactory', function(basicSegmentFactory) {
 			return accelSegment;
 		}
 
-		if(j==1){	
-		//calculate times
-			var t1=0.5*j*(tf-t0);
-			var tm=(tf-t0)-2*t1;
-			var t2=t1+tm;
+
+		var aMax;
+		var jerk;
+		var th;
 	
-			var aMax=2*(vf-v0)/(tf+t2-t1);
+		if(jPct==1){	
+			// two basic segments
+
+			// th - duration of half the accel segment
+			th=(tf-t0)/2;
+			aMax = (vf-v0)/th;
+			jerk = aMax/th;
+
+			coeffs1=[p0,v0,0,jerk/6];
+
+			basicSegment=basicSegmentFactory.CreateBasicSegment(t0,t0+th,coeffs1);
 	
-			var jerk = aMax/(tf-t0);
+			coeffs2=[basicSegment.EvaluatePositionAt(t0+th),basicSegment.EvaluateVelocityAt(t0+th),aMax/2,-jerk/6];
 	
-			var coeffs1=[p0,v0,0,jerk/6];
-	
-			basicSegment=basicSegmentFactory.CreateBasicSegment(t0,t0+t1,coeffs1);
-	
-			var coeffs2=[basicSegment.EvaluatePositionAt(t0+t1),basicSegment.EvaluateVelocityAt(t0+t1),aMax/2,jerk/6];
-	
-			var basicSegment2=basicSegmentFactory.CreateBasicSegment(t0+t1,tf,coeffs2);
+			basicSegment2=basicSegmentFactory.CreateBasicSegment(t0+th,tf,coeffs2);
 	
 			accelSegment = new AccelMotionSegment([basicSegment,basicSegment2]);
 	
 			return accelSegment;
 		}
+
+		// last case is three basic segments
+		var td1; //duration of first and third segments
+		var tdm; //duration of the middle segment
+		td1=0.5*jPct*(tf-t0);
+		tdm=tf-t0-2*(td1);
+
+		//calculate max accel by dividing the segment into three chunks
+		// and using the fact that (vf-v0) equals area under acceleration
+		aMax=(vf-v0)/(td1+tdm);
+		jerk=aMax/td1;
+
+		coeffs1=[p0,v0,0,jerk/6];
+		basicSegment = basicSegmentFactory.CreateBasicSegment(t0,t0+td1,coeffs1);
+
+		coeffs2=[basicSegment.EvaluatePositionAt(t0+td1),basicSegment.EvaluateVelocityAt(t0+td1),aMax,0]; // middle segment has no jerk
+		basicSegment2 = basicSegmentFactory.CreateBasicSegment(t0+td1,t0+tdm,coeffs2);
+
+		coeffs3=[basicSegment2.EvaluatePositionAt(t0+tdm),basicSegment2.EvaluateVelocityAt(t0+tdm),aMax,-jerk/6];
+		basicSegment3 = basicSegmentFactory(t0+tdm,tf,coeffs3);
+
+		accelSegment = new AccelMotionSegment([basicSegment, basicSegment2, basicSegment3]);
+
+		return accelSegment;
 
 
 	};
