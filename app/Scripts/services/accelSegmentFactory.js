@@ -127,4 +127,7 @@ app.factory('accelSegmentFactory', function(basicSegmentFactory) {
 		
 	};
 
+
+	return factory;
+
 });
