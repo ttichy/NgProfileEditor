@@ -10,7 +10,7 @@ app.factory('basicSegmentFactory', function(polynomialFactory) {
 		this.initialTime = t0;
 		this.finalTime = tf;
 
-		var poly = new polynomialFactory.CreatePolyAbCd(positionPolyCoeffs);
+		var poly = new polynomialFactory.CreatePolyAbCd(positionPolyCoeffs,t0);
 
 
 		this.positionPoly = poly;
@@ -32,10 +32,13 @@ app.factory('basicSegmentFactory', function(polynomialFactory) {
 		return this.velocityPoly.EvaluateAt(x);
 	};
 
-	MotionSegment.prototype.EvaluateAccelAt = function(x) {
-		return this.velocityPoly.EvaluateAt(x);
+	MotionSegment.prototype.EvaluateAccelerationAt = function(x) {
+		return this.accelPoly.EvaluateAt(x);
 	};
 
+	MotionSegment.prototype.EvaluateJerkAt = function(x) {
+		return this.jerkPoly.EvaluateAt(x);
+	};
 
 
 

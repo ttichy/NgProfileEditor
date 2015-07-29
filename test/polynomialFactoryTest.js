@@ -103,6 +103,14 @@ describe('Unit: polynomial factory', function() {
     
     expect(derAt1).toBe(3);
     expect(derAt2).toBe(10);
+
+    var der2 = der.Derivative();
+
+    var der2At1=der2.EvaluateAt(1);
+    var der2At3=der2.EvaluateAt(3);
+
+    expect(der2At1).toBe(4);
+    expect(der2At3).toBe(16);
     
 
   });
