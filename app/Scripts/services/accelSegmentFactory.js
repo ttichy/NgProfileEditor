@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('accelSegmentFactory', function(basicSegmentFactory) {
+app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentFactory) {
 
 	var factory={};
 
@@ -119,7 +119,7 @@ app.factory('accelSegmentFactory', function(basicSegmentFactory) {
 		var segment = this.basicSegments.filter(function(value){
 
 		});
-	}
+	};
 
 	AccelMotionSegment.prototype.AllSegments = function() {
 		
@@ -130,4 +130,4 @@ app.factory('accelSegmentFactory', function(basicSegmentFactory) {
 
 	return factory;
 
-});
+}]);

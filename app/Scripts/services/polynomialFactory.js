@@ -66,12 +66,12 @@ app.factory('polynomialFactory', function() {
 
 
 		Polynomial.prototype.toPrettyString = function() {
-			return this.A+'x^3 + '+this.B+'x^2 + '+this.C+'x + '+this.D;
+			return this.A+'(x-'+ this.startPoint +')^3 + '+this.B+'(x-'+this.startPoint+')^2 + '+this.C+'(x-' + this.startPoint + ')'+this.D;
 		};
 
 
 
-		var poly = new Polynomial(coeffs.reverse,startPoint);
+		var poly = new Polynomial(coeffs.reverse(),startPoint);
 
 		return poly;
 
