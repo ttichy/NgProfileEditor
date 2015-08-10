@@ -13,6 +13,16 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 
 	var factory = {};
 
+	factory.CreateMotionProfile=function(type){
+		return new MotionProfile(type);
+	};
+
+
+	/*
+	MOTION PROFILE OBJECT LOGIC
+	 */
+	
+
 
 
 	var MotionProfile = function(type) {
@@ -22,7 +32,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		if (type === "linear")
 			this.ProfileType = "linear";
 
-		this.Segments = [];
+		this.Segments = {};
 
 	};
 
@@ -34,11 +44,13 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		
 		// using associative array to hold all segments -> quick and easy to search
 		var allSegments=[];
-
+		debugger;
 		for(var key in this.Segments) {
 			if(!this.Segments.hasOwnProperty(key))
 				continue;
-			allSegments.push(this.Segments[key].AllSegments);
+			this.Segments[key].AllSegments().forEach(function(segment){
+				allSegments.push(segment);
+			});
 		}
 
 		return allSegments;
@@ -57,8 +69,17 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 
 	MotionProfile.prototype.AddAccelSegment = function(accelSegment) {
 		//TODO: check parameter type
+		
+		var existing=this.Segments[accelSegment.initialTime];
+		if(angular.isObject(existing))
+			throw new Error('segment with initial time '+ accelSegment+' already exists');
+
+		this.Segments[accelSegment.initialTime]=accelSegment;
+		
 
 
 	};
+
+	return factory;
 
 }]);

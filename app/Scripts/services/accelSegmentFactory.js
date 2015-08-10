@@ -16,8 +16,8 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 	 * @param {[type]} jPct  [jerk as a percent of time]
 	 */
 	factory.MakeFromVelocity= function(t0,tf,p0,v0,vf,jPct){
-		
-		if(jPct<0 || jPct>1)
+
+		if(angular.isUndefined(jPct) || jPct<0 || jPct>1)
 			throw new Error('expecting jerk between <0,1>');
 		var basicSegment, basicSegment2, basicSegment3;
 		var accelSegment;
@@ -32,7 +32,6 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 			accelSegment=new AccelMotionSegment([basicSegment]);
 			return accelSegment;
 		}
-
 
 		var aMax;
 		var jerk;
@@ -60,6 +59,7 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		}
 
 		// last case is three basic segments
+
 		var td1; //duration of first and third segments
 		var tdm; //duration of the middle segment
 		td1=0.5*jPct*(tf-t0);
@@ -77,7 +77,7 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		basicSegment2 = basicSegmentFactory.CreateBasicSegment(t0+td1,t0+tdm,coeffs2);
 
 		coeffs3=[basicSegment2.EvaluatePositionAt(t0+tdm),basicSegment2.EvaluateVelocityAt(t0+tdm),aMax,-jerk/6];
-		basicSegment3 = basicSegmentFactory(t0+tdm,tf,coeffs3);
+		basicSegment3 = basicSegmentFactory.CreateBasicSegment(t0+tdm,tf,coeffs3);
 
 		accelSegment = new AccelMotionSegment([basicSegment, basicSegment2, basicSegment3]);
 
@@ -88,7 +88,7 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 
 
 	factory.MakeFromPosition = function(t0,tf,p0,pf,v0,j){
-
+		//TODO: add awesome JS here
 	};
 
 
