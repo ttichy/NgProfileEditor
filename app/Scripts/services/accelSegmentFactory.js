@@ -70,13 +70,13 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		aMax=(vf-v0)/(td1+tdm);
 		jerk=aMax/td1;
 
-		coeffs1=[p0,v0,0,jerk/6].reverse();
+		coeffs1=[jerk/6,0,v0,p0];
 		basicSegment = basicSegmentFactory.CreateBasicSegment(t0,t0+td1,coeffs1);
 
-		coeffs2=[basicSegment.EvaluatePositionAt(t0+td1),basicSegment.EvaluateVelocityAt(t0+td1),aMax/2,0].reverse(); // middle segment has no jerk
+		coeffs2=[0, aMax/2,basicSegment.EvaluateVelocityAt(t0+td1),basicSegment.EvaluatePositionAt(t0+td1)]; // middle segment has no jerk
 		basicSegment2 = basicSegmentFactory.CreateBasicSegment(t0+td1,t0+td1+tdm,coeffs2);
 
-		coeffs3=[basicSegment2.EvaluatePositionAt(t0+td1+tdm),basicSegment2.EvaluateVelocityAt(t0+td1+tdm),aMax/2,-jerk/6].reverse();
+		coeffs3=[-jerk/6, aMax/2,basicSegment2.EvaluateVelocityAt(t0+td1+tdm), basicSegment2.EvaluatePositionAt(t0+td1+tdm)];
 		basicSegment3 = basicSegmentFactory.CreateBasicSegment(t0+td1+tdm,tf,coeffs3);
 
 		accelSegment = new AccelMotionSegment([basicSegment, basicSegment2, basicSegment3]);
