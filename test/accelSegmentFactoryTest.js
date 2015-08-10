@@ -15,7 +15,7 @@ describe('Unit: accelSegmentFactory testing', function() {
   it('should create an accel segment (t0=0,tf=2,p0=0,v0=0,vf=10,j=0.5) and correctly evalute position and velocities', function(){
     
     // https://www.desmos.com/calculator/kihyp1kjux
-    debugger;
+
     var seg = accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
     
     expect(seg.AllSegments().length).toBe(3);
@@ -45,9 +45,9 @@ describe('Unit: accelSegmentFactory testing', function() {
   });
 
   it('should create an accel segment (t0=2,tf=4,p0=0.16667,v0=10,vf=0,j=0.5) and correctly evalute position and velocities', function(){
-    
-    // https://www.desmos.com/calculator/kihyp1kjux
-    var seg = accelSegmentFactory.MakeFromVelocity(2,4,1/6,10,0,0.5);
+            debugger;
+
+    var seg = accelSegmentFactory.MakeFromVelocity(2,4,10,10,0,0.5);
     
     expect(seg.AllSegments().length).toBe(3);
 
@@ -58,6 +58,8 @@ describe('Unit: accelSegmentFactory testing', function() {
     expect(seg1.initialTime).toBe(2);
     expect(seg1.finalTime).toBe(2.5);
 
+    expect(seg1.EvaluatePositionAt(2)).toBe(10);
+
 
     expect(seg2.initialTime).toBe(2.5);
     expect(seg2.finalTime).toBe(3.5);
@@ -65,6 +67,8 @@ describe('Unit: accelSegmentFactory testing', function() {
 
     expect(seg3.initialTime).toBe(3.5);
     expect(seg3.finalTime).toBe(4);
+    expect(seg3.EvaluatePositionAt(4)).toBe(20);
+    expect(seg3.EvaluateVelocityAt(4)).toBeCloseTo(0,5);
 
   });
 
