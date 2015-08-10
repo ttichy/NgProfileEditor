@@ -102,8 +102,15 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		if(basicSegments.length<1 || basicSegments.length > 3)
 			throw new Error('Expecting aray length to be 1,2 or 3');
 
+		//TODO: check ordering of the basicSegments (increasing time)
 
 		this.type='acceleration';
+
+
+		// each segment (regardless of type) has initialTime and finalTime
+		this.initialTime=basicSegments[0].initialTime;
+		this.finalTime=basicSegments[basicSegments.length-1].finalTime;
+
 		this.basicSegments=basicSegments;
 	};
 
