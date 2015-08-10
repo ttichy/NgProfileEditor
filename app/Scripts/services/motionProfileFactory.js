@@ -44,16 +44,17 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		
 		// using associative array to hold all segments -> quick and easy to search
 		var allSegments=[];
-		debugger;
+
 		for(var key in this.Segments) {
 			if(!this.Segments.hasOwnProperty(key))
 				continue;
-			this.Segments[key].AllSegments().forEach(function(segment){
-				allSegments.push(segment);
-			});
+			allSegments.push(this.Segments[key].AllSegments());
 		}
 
-		return allSegments;
+		// previous code gets us an array of arrays, we need to flatten it
+		return allSegments.reduce(function(a, b) {
+  			return a.concat(b);
+  		});
 	};
 
 	/**
