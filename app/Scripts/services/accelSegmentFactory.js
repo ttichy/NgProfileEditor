@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentFactory) {
+app.factory('accelSegmentFactory', ['basicSegmentFactory','FastMath', function(basicSegmentFactory,fastMath) {
 
 	var factory={};
 
@@ -118,7 +118,7 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		//which segment does x fall in
 		
 		var segment = this.FindSegmentAtTime(x);
-		segment.EvaluatePositionAt(x);
+		return segment.EvaluatePositionAt(x);
 		
 	};
 
@@ -126,21 +126,29 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		//which segment does x fall in
 		
 		var segment = this.FindSegmentAtTime(x);
-		segment.EvaluateVelocityAt(x);
+		return segment.EvaluateVelocityAt(x);
 	};
 
 	AccelMotionSegment.prototype.EvaluateAccelerationAt = function(x) {
 		//which segment does x fall in
 		
 		var segment = this.FindSegmentAtTime(x);
-		segment.EvaluateAccelerationAt(x);
+		return segment.EvaluateAccelerationAt(x);
 	};
 
 
 	AccelMotionSegment.prototype.FindSegmentAtTime = function(time){
-		var segment = this.basicSegments.filter(function(value){
-
+		var segment = this.basicSegments.filter(function(bSeg){
+			return fastMath.geq(time,bSeg.initialTime) && fastMath.leq(time,bSeg.finalTime);
 		});
+		
+		if(!angular.isObject(segment[0]))
+			throw new Error("Couldn't find basic segment that contains time "+time);
+
+		if(segment.length > 1)
+			throw new Error("Found "+segment.length+" segments, expecting exactly one.");
+
+		return segment[0];
 	};
 
 	AccelMotionSegment.prototype.AllSegments = function() {
@@ -148,7 +156,14 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 	};
 
 
-	AccelMotionSegment.prototype.ModifyInitial=function(t0,a0,v0,p0){
+	/**
+	 * Modifies segment initial values. Used when adding a point in the middle of a segment.
+	 * @param {float} t0 new initial time
+	 * @param {float} a0 new initial acceleration
+	 * @param {float} v0 new initial velocity
+	 * @param {float} p0 new initial position
+	 */
+	AccelMotionSegment.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
 		var last=this.basicSegments.length-1;
 		var tf=this.basicSegments[last].finalTime;
 		var af = this.EvaluateAccelerationAt(tf);

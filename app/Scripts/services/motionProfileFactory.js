@@ -80,23 +80,29 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			//logic to insert the segment
 			
 			// the existing segment better be longer than the segment being inserted.
-			if(fastMath.leq(existing.finaTime,segment.finalTime))
+			if(fastMath.leq(existing.finalTime,segment.finalTime))
 				throw new Error("Exiting segment is shorter than the new one");
-			// the new segment is simply added
-			this.Segments[segment.IntialTime]=segment;
+			
+			// DON'T overwrite the existing segment YET
+			//this.Segments[segment.intialTime]=segment;
 
-			//but need to handle the "rest" of the existing one
+			//handle the slicing of the existing segment first
 			var t0=segment.finalTime;
 			var p0=segment.EvaluatePositionAt(t0);
 			var v0=segment.EvaluateVelocityAt(t0);
 			var a0=segment.EvaluateAccelerationAt(t0);
-			var remainder = existing.ModifyInitial(t0,a0,v0,p0);
-			this.Segments[remainder.InitiaTime]=remainder;
+			var remainder = existing.ModifyInitialValues(t0,a0,v0,p0);
+			this.Segments[remainder.initialTime]=remainder;
+
+			//then overwrite the segment
+			this.Segments[segment.initialTime]=segment;
+
 		}
 		else {
-			//logic to add the segment
+			this.Segments[segment.initialTime]=segment;
 		}
 
+		//TODO: need some checking to make sure we are building a contiguous profile
 
 	};
 
