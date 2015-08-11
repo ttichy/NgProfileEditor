@@ -9,7 +9,7 @@
 var app=angular.module('profileEditor');
 
 
-app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory', function(basicSegmentFactory, accelSegmentFactory) {
+app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory','FastMath', function(basicSegmentFactory, accelSegmentFactory, fastMath) {
 
 	var service = {};
 
@@ -29,7 +29,8 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		if (type === "linear")
 			this.ProfileType = "linear";
 
-		this.Segments = {};
+		this.Segments = {}; //associative array for all segments
+		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments
 
 	};
 
@@ -65,14 +66,38 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 	};
 
 
-	MotionProfile.prototype.AddAccelSegment = function(accelSegment) {
-		//TODO: check parameter type
-		
-		var existing=this.Segments[accelSegment.initialTime];
-		if(angular.isObject(existing))
-			throw new Error('segment with initial time '+ accelSegment+' already exists');
+	/**
+	 * Puts segment into the profile
+	 * @param {MotionSegment} segment to be put into the profile
+	 */
+	MotionProfile.prototype.PutSegment = function(segment) {
 
-		this.Segments[accelSegment.initialTime]=accelSegment;
+		// is there already a segment at this initial time?		
+		var existing=this.Segments[segment.initialTime];
+
+
+		if (angular.isObject(existing)) {
+			//logic to insert the segment
+			
+			// the existing segment better be longer than the segment being inserted.
+			if(fastMath.leq(existing.finaTime,segment.finalTime))
+				throw new Error("Exiting segment is shorter than the new one");
+			// the new segment is simply added
+			this.Segments[segment.IntialTime]=segment;
+
+			//but need to handle the "rest" of the existing one
+			var t0=segment.finalTime;
+			var p0=segment.EvaluatePositionAt(t0);
+			var v0=segment.EvaluateVelocityAt(t0);
+			var a0=segment.EvaluateAccelerationAt(t0);
+			var remainder = existing.ModifyInitial(t0,a0,v0,p0);
+			this.Segments[remainder.InitiaTime]=remainder;
+		}
+		else {
+			//logic to add the segment
+		}
+
+
 	};
 
 	return service;

@@ -122,6 +122,21 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 		
 	};
 
+	AccelMotionSegment.prototype.EvaluateVelocityAt = function(x) {
+		//which segment does x fall in
+		
+		var segment = this.FindSegmentAtTime(x);
+		segment.EvaluateVelocityAt(x);
+	};
+
+	AccelMotionSegment.prototype.EvaluateAccelerationAt = function(x) {
+		//which segment does x fall in
+		
+		var segment = this.FindSegmentAtTime(x);
+		segment.EvaluateAccelerationAt(x);
+	};
+
+
 	AccelMotionSegment.prototype.FindSegmentAtTime = function(time){
 		var segment = this.basicSegments.filter(function(value){
 
@@ -129,9 +144,33 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory',function(basicSegmentF
 	};
 
 	AccelMotionSegment.prototype.AllSegments = function() {
-		
 		return this.basicSegments;
+	};
+
+
+	AccelMotionSegment.prototype.ModifyInitial=function(t0,a0,v0,p0){
+		var last=this.basicSegments.length-1;
+		var tf=this.basicSegments[last].finalTime;
+		var af = this.EvaluateAccelerationAt(tf);
+		var vf=this.EvaluateVelocityAt(tf);
+
+		var jPct;
+		if(last===0)
+			jPct=0;
+		else if(last==1)
+			jPct=1;
+		else
+		{
+			var firstDuration=this.basicSegments[0].finalTime-this.basicSegments[0].initialTime;
+			var totalDuration=this.basicSegments[0].initialTime=this.basicSegments[2].finalTime;
+			jPct=2*firstDuration/totalDuration;
+
+		}
+
 		
+		return factory.MakeFromVelocity(t0,tf,p0,v0,vf,jPct);
+
+
 	};
 
 
