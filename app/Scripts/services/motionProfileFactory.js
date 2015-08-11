@@ -9,11 +9,11 @@
 var app=angular.module('profileEditor');
 
 
-app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory', function(basicSegmentFactory, accelSegmentFactory) {
+app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory', function(basicSegmentFactory, accelSegmentFactory) {
 
-	var factory = {};
+	var service = {};
 
-	factory.CreateMotionProfile=function(type){
+	service.CreateMotionProfile=function(type){
 		return new MotionProfile(type);
 	};
 
@@ -21,9 +21,6 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 	/*
 	MOTION PROFILE OBJECT LOGIC
 	 */
-	
-
-
 
 	var MotionProfile = function(type) {
 
@@ -76,11 +73,8 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			throw new Error('segment with initial time '+ accelSegment+' already exists');
 
 		this.Segments[accelSegment.initialTime]=accelSegment;
-		
-
-
 	};
 
-	return factory;
+	return service;
 
 }]);

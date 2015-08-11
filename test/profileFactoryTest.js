@@ -32,7 +32,7 @@ describe('Unit: motionProfileFactory testing', function() {
   });
 
 
-  it('should add an accel segments to the profile', function() {
+  it('should add 2 accel segments to the profile', function() {
 
     var profile=motionProfileFactory.CreateMotionProfile("rotary");
 
@@ -40,10 +40,10 @@ describe('Unit: motionProfileFactory testing', function() {
 
     profile.AddAccelSegment(accelSegment);
 
-    expect(profile.GetAllBasicSegments().length).toBe(3);
-
-
-
+    accelSegment=accelSegmentFactory.MakeFromVelocity(2,4,10,10,0,0.5);
+    
+    profile.AddAccelSegment(accelSegment);
+    expect(profile.GetAllBasicSegments().length).toBe(6);
 
   });
 
