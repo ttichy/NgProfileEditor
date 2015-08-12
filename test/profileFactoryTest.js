@@ -63,6 +63,12 @@ describe('Unit: motionProfileFactory testing', function() {
     expect(seg2.EvaluatePositionAt(2)).toBe(10);
 
 
+    var seg5=segments[5];
+    expect(seg5.initialTime).toBe(3.5);
+    expect(seg5.finalTime).toBe(4);
+    expect(seg5.EvaluatePositionAt(4)).toBe(20);
+
+
   });
 
 
@@ -74,7 +80,6 @@ describe('Unit: motionProfileFactory testing', function() {
 
     profile.PutSegment(accelSegment);
     
-    debugger;
     var segments=profile.GetAllBasicSegments();
 
     
@@ -84,6 +89,87 @@ describe('Unit: motionProfileFactory testing', function() {
     expect(profile.GetAllBasicSegments().length).toBe(6);
 
     segments=profile.GetAllBasicSegments();
+
+    var seg1=segments[0];
+    expect(seg1.initialTime).toBe(0);
+    expect(seg1.finalTime).toBe(0.25);
+    expect(seg1.EvaluatePositionAt(0)).toBe(0);
+    expect(seg1.EvaluatePositionAt(0.25)).toBeCloseTo(0.104166666,5);
+    expect(seg1.EvaluateVelocityAt(0.25)).toBeCloseTo(1.25,3);
+    expect(seg1.EvaluateAccelerationAt(0.25)).toBe(10);
+
+
+    var seg2=segments[1];
+    
+    //at initial time
+    expect(seg2.initialTime).toBe(0.25);
+    expect(seg2.finalTime).toBe(0.75);
+    expect(seg2.EvaluatePositionAt(0.25)).toBeCloseTo(0.104166666,5);
+    expect(seg2.EvaluateVelocityAt(0.25)).toBeCloseTo(1.25,3);
+    expect(seg2.EvaluateAccelerationAt(0.25)).toBe(10);
+
+    //at final time
+    expect(seg2.EvaluatePositionAt(0.75)).toBeCloseTo(1.9791666666,5);
+    expect(seg2.EvaluateVelocityAt(0.75)).toBeCloseTo(6.25,3);
+    expect(seg2.EvaluateAccelerationAt(0.75)).toBe(10);
+
+
+    var seg3=segments[2];
+    //at initial time
+    expect(seg3.initialTime).toBe(0.75);
+    expect(seg3.finalTime).toBe(1.0);
+    expect(seg3.EvaluatePositionAt(0.75)).toBeCloseTo(1.9791666666,5);
+    expect(seg3.EvaluateVelocityAt(0.75)).toBeCloseTo(6.25,3);
+    expect(seg3.EvaluateAccelerationAt(0.75)).toBe(10);
+
+    //at final time
+    expect(seg3.EvaluatePositionAt(1.0)).toBeCloseTo(3.75,5);
+    expect(seg3.EvaluateVelocityAt(1.0)).toBeCloseTo(7.5,3);
+    expect(seg3.EvaluateAccelerationAt(1.0)).toBe(0);    
+
+
+
+    var seg4=segments[3];
+    //at initial time
+    expect(seg4.initialTime).toBe(1.0);
+    expect(seg4.finalTime).toBe(1.25);
+    expect(seg4.EvaluatePositionAt(1.0)).toBeCloseTo(3.75,5);
+    expect(seg4.EvaluateVelocityAt(1.0)).toBeCloseTo(7.5,3);
+    expect(seg4.EvaluateAccelerationAt(1.0)).toBe(0);
+
+    //at final time
+    expect(seg4.EvaluatePositionAt(1.25)).toBeCloseTo(5.65972222,5);
+    expect(seg4.EvaluateVelocityAt(1.25)).toBeCloseTo(7.9166666666,3);
+    expect(seg4.EvaluateAccelerationAt(1.25)).toBeCloseTo(3.33333,3);    
+
+
+
+    var seg5=segments[4];
+    //at initial time
+    expect(seg5.initialTime).toBe(1.25);
+    expect(seg5.finalTime).toBe(1.75);
+    expect(seg5.EvaluatePositionAt(1.25)).toBeCloseTo(5.65972222,5);
+    expect(seg5.EvaluateVelocityAt(1.25)).toBeCloseTo(7.9166666666,3);
+    expect(seg5.EvaluateAccelerationAt(1.25)).toBeCloseTo(3.33333,3);
+
+    //at final time
+    expect(seg5.EvaluatePositionAt(1.75)).toBeCloseTo(10.03472222222,5);
+    expect(seg5.EvaluateVelocityAt(1.75)).toBeCloseTo(9.58333333333,3);
+    expect(seg5.EvaluateAccelerationAt(1.75)).toBeCloseTo(3.33333,3);    
+
+
+    var seg6=segments[5];
+    //at initial time
+    expect(seg6.initialTime).toBe(1.75);
+    expect(seg6.finalTime).toBe(2.0);
+    expect(seg6.EvaluatePositionAt(1.75)).toBeCloseTo(10.03472222222,5);
+    expect(seg6.EvaluateVelocityAt(1.75)).toBeCloseTo(9.58333333333,3);
+    expect(seg6.EvaluateAccelerationAt(1.75)).toBeCloseTo(3.33333,3);
+
+    //at final time
+    expect(seg6.EvaluatePositionAt(2.0)).toBeCloseTo(12.5,5);
+    expect(seg6.EvaluateVelocityAt(2.0)).toBeCloseTo(10,3);
+    expect(seg6.EvaluateAccelerationAt(2.0)).toBeCloseTo(0,3);
 
 
   });
