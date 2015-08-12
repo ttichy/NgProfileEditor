@@ -72,7 +72,7 @@ describe('Unit: motionProfileFactory testing', function() {
   });
 
 
- it('should correctly place a segment within another segment, slicing the existing segment correctly', function() {
+ it('should correctly place an accel segment within another accel segment, slicing the existing segment correctly', function() {
 
     var profile=motionProfileFactory.CreateMotionProfile("rotary");
 
@@ -171,10 +171,57 @@ describe('Unit: motionProfileFactory testing', function() {
     expect(seg6.EvaluateVelocityAt(2.0)).toBeCloseTo(10,3);
     expect(seg6.EvaluateAccelerationAt(2.0)).toBeCloseTo(0,3);
 
+    expect(profile.SegmentKeys.length).toBe(2);
+
+    expect(profile.SegmentKeys[0]).toBe(0);
+    expect(profile.SegmentKeys[1]).toBe(1);
 
   });
 
+ it('should correctly delete an accel segment that is not the last segment', function() {
 
+    var profile=motionProfileFactory.CreateMotionProfile("rotary");
+
+    var accelSegment=accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
+
+    profile.PutSegment(accelSegment);
+    
+    
+    
+    accelSegment=accelSegmentFactory.MakeFromVelocity(0,1,0,0,7.5,0.5);
+    
+    profile.PutSegment(accelSegment);
+
+
+    debugger;
+
+    profile.DeleteSegment(accelSegment);
+
+    var segments=profile.GetAllBasicSegments();
+
+    expect(segments.length).toBe(3);
+
+
+    var seg0=segments[0];
+    expect(seg0.initialTime).toBe(0);
+    expect(seg0.finalTime).toBe(0.5);
+    expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777,4);
+
+    var seg1=segments[1];
+    expect(seg1.initialTime).toBe(0.5);
+    expect(seg1.finalTime).toBe(1.5);
+    expect(seg1.EvaluatePositionAt(1.5)).toBeCloseTo(5.277777,4);
+
+    var seg2=segments[2];
+    expect(seg2.initialTime).toBe(1.5);
+    expect(seg2.finalTime).toBe(2);
+    expect(seg2.EvaluatePositionAt(2)).toBe(10);
+    expect(seg2.EvaluateVelocityAt(2)).toBe(10);
+
+
+
+
+ });
 
 
 });

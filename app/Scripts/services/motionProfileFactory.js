@@ -30,7 +30,7 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			this.ProfileType = "linear";
 
 		this.Segments = {}; //associative array for all segments
-		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments
+		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments. Always sorted.
 
 	};
 
@@ -92,6 +92,14 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			var v0=segment.EvaluateVelocityAt(t0);
 			var a0=segment.EvaluateAccelerationAt(t0);
 			var remainder = existing.ModifyInitialValues(t0,a0,v0,p0);
+
+			var pos=this.SegmentKeys.indexOf(segment.initialTime);
+			if(pos<0)
+				throw new Error("Couldn't find segment in the SegmentKeys");
+
+			// insert the remainder segment into the index
+			this.SegmentKeys.splice(pos+1,0,remainder.initialTime);
+
 			this.Segments[remainder.initialTime]=remainder;
 
 			//then overwrite the segment
@@ -100,11 +108,75 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		}
 		else {
 			this.Segments[segment.initialTime]=segment;
+			
+			// adding always means at the end, so simply
+			this.SegmentKeys.push(segment.initialTime);
 		}
 
 		//TODO: need some checking to make sure we are building a contiguous profile
 
 	};
+
+	/**
+	 * Deletes specified segment. Suppose we have segments 1, 2 and 3 and want to delete 2.
+	 * 	First, we delete segment 2. Then, we modify the initial values of segment 3 to be the final values of segment 1
+	 * @param {MotionSegment} segment segment to delete
+	 */
+	MotionProfile.prototype.DeleteSegment = function(segment) {
+
+		var existing=this.Segments[segment.initialTime];
+
+		if(!angular.isObject(existing))
+			return;
+
+		// need to find the previous and next segments
+		var segmentPos=this.SegmentKeys.indexOf(segment.initialTime);
+		if(segmentPos<0)
+			throw new Error("Couldn't find segment in the SegmentKeys");
+
+		//check if this is the last segment
+		if (segmentPos === this.SegmentKeys[this.SegmentKeys.length - 1]) {
+			// yes - last segment
+			delete this.Segments[segment.initialTime];
+			this.SegmentKeys.splice(segmentPos, 1);
+
+		} else {
+			// not last segment
+			// 
+			// we need to save the initial values of the segment that is about to be deleted
+			var t0 = segment.initialTime;
+			var p0 = segment.EvaluatePositionAt(segment.initialTime);
+			var v0 = segment.EvaluateVelocityAt(segment.initialTime);
+			var a0 = segment.EvaluateAccelerationAt(segment.initialTime);
+
+			// get the next segment
+			var nextSegmentKey=this.SegmentKeys[segmentPos+1];
+			var nextSegment=this.Segments[nextSegmentKey];
+
+			//save the final values
+			var pf=nextSegment.EvaluatePositionAt(nextSegment.finalTime);
+			var vf=nextSegment.EvaluateVelocityAt(nextSegment.finalTime);
+			var af=nextSegment.EvaluateAccelerationAt(nextSegment.finalTime);
+
+
+			var newSegment=nextSegment.ModifyInitialValues(t0,a0,v0,p0);
+
+			// delete the segment
+			delete this.Segments[nextSegment.initialTime];
+			this.SegmentKeys.splice(nextSegmentKey, 1);
+
+			this.Segments[t0]=newSegment;
+
+
+		}
+
+
+
+
+		
+
+	};
+
 
 	return service;
 

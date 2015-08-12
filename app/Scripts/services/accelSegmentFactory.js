@@ -177,7 +177,7 @@ app.factory('accelSegmentFactory', ['basicSegmentFactory','FastMath', function(b
 		else
 		{
 			var firstDuration=this.basicSegments[0].finalTime-this.basicSegments[0].initialTime;
-			var totalDuration=this.basicSegments[0].initialTime=this.basicSegments[2].finalTime;
+			var totalDuration=this.basicSegments[2].finalTime-this.basicSegments[0].initialTime;
 			jPct=2*firstDuration/totalDuration;
 
 		}
