@@ -135,7 +135,7 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			throw new Error("Couldn't find segment in the SegmentKeys");
 
 		//check if this is the last segment
-		if (segmentPos === this.SegmentKeys[this.SegmentKeys.length - 1]) {
+		if (this.SegmentKeys[segmentPos] === this.SegmentKeys[this.SegmentKeys.length - 1]) {
 			// yes - last segment
 			delete this.Segments[segment.initialTime];
 			this.SegmentKeys.splice(segmentPos, 1);

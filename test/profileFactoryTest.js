@@ -178,18 +178,56 @@ describe('Unit: motionProfileFactory testing', function() {
 
   });
 
- it('should correctly delete an accel segment that is not the last segment', function() {
+  it('should correctly delete an accel segment that is not the last segment', function() {
 
-    var profile=motionProfileFactory.CreateMotionProfile("rotary");
+    var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-    var accelSegment=accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
+    var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
     profile.PutSegment(accelSegment);
-    
-    
-    
-    accelSegment=accelSegmentFactory.MakeFromVelocity(0,1,0,0,7.5,0.5);
-    
+
+
+
+    accelSegment = accelSegmentFactory.MakeFromVelocity(0, 1, 0, 0, 7.5, 0.5);
+
+    profile.PutSegment(accelSegment);
+
+    profile.DeleteSegment(accelSegment);
+
+    var segments = profile.GetAllBasicSegments();
+
+    expect(segments.length).toBe(3);
+
+
+    var seg0 = segments[0];
+    expect(seg0.initialTime).toBe(0);
+    expect(seg0.finalTime).toBe(0.5);
+    expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777, 4);
+
+    var seg1 = segments[1];
+    expect(seg1.initialTime).toBe(0.5);
+    expect(seg1.finalTime).toBe(1.5);
+    expect(seg1.EvaluatePositionAt(1.5)).toBeCloseTo(5.277777, 4);
+
+    var seg2 = segments[2];
+    expect(seg2.initialTime).toBe(1.5);
+    expect(seg2.finalTime).toBe(2);
+    expect(seg2.EvaluatePositionAt(2)).toBe(10);
+    expect(seg2.EvaluateVelocityAt(2)).toBe(10);
+
+  });
+
+
+  it('should correctly delete an accel segment that IS the last segment', function() {
+
+    var profile = motionProfileFactory.CreateMotionProfile("rotary");
+
+    var accelSegment2 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+
+    profile.PutSegment(accelSegment2);
+
+    var accelSegment = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+
     profile.PutSegment(accelSegment);
 
 
@@ -197,32 +235,28 @@ describe('Unit: motionProfileFactory testing', function() {
 
     profile.DeleteSegment(accelSegment);
 
-    var segments=profile.GetAllBasicSegments();
+    var segments = profile.GetAllBasicSegments();
 
     expect(segments.length).toBe(3);
 
 
-    var seg0=segments[0];
+    var seg0 = segments[0];
     expect(seg0.initialTime).toBe(0);
     expect(seg0.finalTime).toBe(0.5);
-    expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777,4);
+    expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777, 4);
 
-    var seg1=segments[1];
+    var seg1 = segments[1];
     expect(seg1.initialTime).toBe(0.5);
     expect(seg1.finalTime).toBe(1.5);
-    expect(seg1.EvaluatePositionAt(1.5)).toBeCloseTo(5.277777,4);
+    expect(seg1.EvaluatePositionAt(1.5)).toBeCloseTo(5.277777, 4);
 
-    var seg2=segments[2];
+    var seg2 = segments[2];
     expect(seg2.initialTime).toBe(1.5);
     expect(seg2.finalTime).toBe(2);
     expect(seg2.EvaluatePositionAt(2)).toBe(10);
     expect(seg2.EvaluateVelocityAt(2)).toBe(10);
 
-
-
-
- });
-
+  });
 
 });
 
