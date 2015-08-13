@@ -9,11 +9,11 @@
 var app=angular.module('profileEditor');
 
 
-app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory','FastMath', function(basicSegmentFactory, accelSegmentFactory, fastMath) {
+app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory','FastMath', function(basicSegmentFactory, accelSegmentFactory, fastMath) {
 
-	var service = {};
+	var factory = {};
 
-	service.CreateMotionProfile=function(type){
+	factory.CreateMotionProfile=function(type){
 		return new MotionProfile(type);
 	};
 
@@ -178,6 +178,6 @@ app.service('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 	};
 
 
-	return service;
+	return factory;
 
 }]);
