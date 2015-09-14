@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('polynomialFactory', function() {
+app.factory('polynomialFactory', ['FastMath',function(FastMath) {
 
     var factory ={};
 
@@ -15,42 +15,43 @@ app.factory('polynomialFactory', function() {
      * Creates a new  polynomial with coefficients A,B,C,D
      * Ax^3 + Bx^2 + Cx +D
      * @param {Array} coeffs [array of coefficients]
+     * @param {double} startPoint where on x-axis does this poly start
+     * @param {double} endPoint where on a x-axis does this poly end
      */
-    factory.CreatePolyAbCd =  function(coeffs,startPoint){
+    factory.CreatePolyAbCd =  function(coeffs,startPoint,endPoint){
         if(!Array.isArray(coeffs) || coeffs.length!=4)
             throw new Error('expecting parameter of type array and length 4');
 
-        if(!!!startPoint && startPoint < 0)
+        if(!angular.isNumber(startPoint) || startPoint < 0)
             throw new Error('expecting a valid startpoint');
+
+        if(!angular.isNumber(endPoint) || endPoint <=startPoint)
+            throw new Error('expecting valid endpoint');
 
 
         /**
          * Polynomial of max 3rd degree
          * @param {Array} coeffArray [description]
          * @param {double} startPoint Point on the X-axis where to start evaluating
+         * @param {double} endPoint where on x-axis does the evaluation stop
          */
-        var Polynomial = function(coeffArray,startPoint){
-
-            if(!Array.isArray(coeffArray))
-                throw new Error('Expecting coefficients to be in an array');
-
-            if(coeffArray.length !=4)
-                throw new Error('Length of coefficient array should be 4');
-
-            if(startPoint===undefined)
-                throw new Error('start point is needed!, got  '+startPoint);
+        var Polynomial = function(coeffArray,startPoint,endPoint){
 
             this.A = coeffArray[3];
             this.B = coeffArray[2];
             this.C = coeffArray[1];
             this.D = coeffArray[0];
             this.startPoint=startPoint;
+            this.endPoint=endPoint;
+
         };
 
 
         Polynomial.prototype.EvaluateAt = function(x) {
-            if(x < this.startPoint)
+            if(FastMath.lt(x ,this.startPoint))
                 throw new Error('Trying to evalute polynomial with x value less than the start point');
+            if(FastMath.gt(x,this.endPoint))
+                throw new Error('Trying to evaluate polynomial with x value greater than the end point');
             return this.A * Math.pow(x-this.startPoint,3) + this.B * Math.pow(x-this.startPoint,2) + this.C*(x-this.startPoint) + this.D;
         };
 
@@ -141,4 +142,4 @@ app.factory('polynomialFactory', function() {
     };
 
     return factory;
-});
+}]);

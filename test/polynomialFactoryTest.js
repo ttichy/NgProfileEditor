@@ -67,7 +67,7 @@ describe('Unit: polynomial factory', function() {
   });
 
   it('should create polynomial starting at 0 and evaluate it correctly', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],0);
+    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],0,20);
     
     var result0=poly.EvaluateAt(0);
     var result1=poly.EvaluateAt(1);
@@ -81,7 +81,7 @@ describe('Unit: polynomial factory', function() {
 
 
   it('should create polynomial starting at 1 and evaluate it correctly', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1);
+    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1,20);
     
     var result0=poly.EvaluateAt(1);
     var result1=poly.EvaluateAt(2);
@@ -95,7 +95,7 @@ describe('Unit: polynomial factory', function() {
 
 
   it('should create polynomial starting at 1 and throw error when evaluating at 0', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1);
+    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1,20);
 
     expect(function() {poly.EvaluateAt(0);}).toThrow(new Error('Trying to evalute polynomial with x value less than the start point'));
 
@@ -103,7 +103,7 @@ describe('Unit: polynomial factory', function() {
 
 
   it('should create polynomial starting at 1 and calculate its derivate', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1);
+    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1,20);
 
     var der = poly.Derivative();
 
@@ -126,7 +126,7 @@ describe('Unit: polynomial factory', function() {
 
   it('should calculate roots of cubic polynomial [1,-6,12,-8]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([1,-6,12,-8],0);
+    var poly=polynomialFactory.CreatePolyAbCd([1,-6,12,-8],0,20);
 
     var roots = poly.Roots();
 
@@ -136,9 +136,9 @@ describe('Unit: polynomial factory', function() {
   });
 
 
-    it('should calculate roots of cubic polynomial [1,6,12,8]', function(){
+  it('should calculate roots of cubic polynomial [1,6,12,8]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([1,6,12,8],0);
+    var poly=polynomialFactory.CreatePolyAbCd([1,6,12,8],0,20);
 
     var roots = poly.Roots();
 
@@ -150,9 +150,9 @@ describe('Unit: polynomial factory', function() {
 
 
 
-    it('should calculate roots of quadratic polynomial [0,1,0,-1]', function(){
+  it('should calculate roots of quadratic polynomial [0,1,0,-1]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,-1],0);
+    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,-1],0,20);
 
     var roots = poly.Roots();
 
@@ -162,9 +162,9 @@ describe('Unit: polynomial factory', function() {
 
   });
 
-    it('should calculate roots of quadratic polynomial [0,1,0,1]', function(){
+  it('should calculate roots of quadratic polynomial [0,1,0,1]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,1],0);
+    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,1],0,20);
 
     var roots = poly.Roots();
 
@@ -174,6 +174,17 @@ describe('Unit: polynomial factory', function() {
 
   });
 
+  it('should calculate roots of quadratic polynomial [1,-3,-144,432] and its derivative', function(){
+
+    var poly=polynomialFactory.CreatePolyAbCd([1,-3,-144,432],0,20);
+
+    var roots = poly.Roots();
+
+    expect(angular.isArray(roots));
+    expect(roots.length).toBe(3);
+
+
+  });
 
 });
 
