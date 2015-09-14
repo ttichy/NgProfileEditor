@@ -143,7 +143,9 @@ describe('Unit: polynomial factory', function() {
     var roots = poly.Roots();
 
     expect(angular.isArray(roots));
-    expect(fm.equal(roots[0],-2)).toBe(true);
+
+    //this does have a root at -2, but since -2 is not greater than the startPoint (0), then ..
+    expect(roots.length).toBe(0);
 
 
   });
@@ -181,7 +183,19 @@ describe('Unit: polynomial factory', function() {
     var roots = poly.Roots();
 
     expect(angular.isArray(roots));
-    expect(roots.length).toBe(3);
+    expect(roots.length).toBe(2);
+
+    //expect(fm.equal(roots[0],-12)); //-12 is not within start/end time
+    expect(fm.equal(roots[0],3));
+    expect(fm.equal(roots[0],12));
+
+    var derivative=poly.Derivative();
+    
+    roots=derivative.Roots();
+    expect(roots.length).toBe(1);
+
+    //expect(fm.equal(roots[0],-6)); //-6 is not within start/end time
+    expect(fm.equal(roots[0],8));    
 
 
   });
