@@ -3,14 +3,16 @@
 var app=angular.module('profileEditor');
 
 
-app.service('presenterService',['motionProfileFactory', function(motionProfileFactory){
+app.service('presenterService',['motionProfileFactory', 'graphProxy', function(motionProfileFactory,graphProxy){
 
 	var service={};
 
 	var registeredGraphs={};
 
-	var knownTypes=['motion','friction','frictionCoeff','externalTorque','externalForce'];
-	Object.seal(knownTypes);
+	var loadTypes=['friction','frictionCoeff','externalTorque','externalForce'];
+	var motionTypes=['position','velocity','acceleration','jerk'];
+
+	Object.seal(loadTypes);
 
 
 	/**
@@ -35,9 +37,9 @@ app.service('presenterService',['motionProfileFactory', function(motionProfileFa
 	 * @param {string} loadName name of load that is being registered
 	 * @param {string} loadType type of load (friction, inertia, external, etc.)
 	 */
-	service.RegisterLoad=function(loadName, loadType){
+	service.CreateLoad=function(loadName, loadType){
 
-		var valid=knownTypes.filter(function(knownType){
+		var valid=loadTypes.filter(function(knownType){
 			return knownType===loadType;
 		});
 
@@ -51,13 +53,25 @@ app.service('presenterService',['motionProfileFactory', function(motionProfileFa
 
 	};
 
+
+	service.DeleteLoad = function(loadName) {
+
+		if (angular.isObject(registeredGraphs.loadName)) {
+			//TODO: check if NOT motion type
+			delete registeredGraphs.loadName;
+		}
+	};
+
+
 	service.GetAllRegisteredGraphs=function() {
-		return registeredGraphs;
+		var types=[];
+		angular.copy(registeredGraphs,types);
+		return types;
 	};
 
 
 	service.GetKnownGraphTypes=function(){
-		return knownTypes;
+		return loadTypes.concat(motionTypes);
 	};
 
 
@@ -86,5 +100,12 @@ app.service('presenterService',['motionProfileFactory', function(motionProfileFa
 
 	};
 
+
+
+	service.MouseClick=function(canvasX,canvasY, graph){
+		var data=graphProxy.toDataX(canvasX)
+	};
+
+	return service;
 
 }]);

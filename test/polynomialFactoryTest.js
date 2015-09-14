@@ -4,6 +4,7 @@ describe('Unit: valid factory injection', function() {
   var polynomialFactory;
   var basicSegmentFactory;
   var accelSegmentFactory;
+  var fm;
 
   beforeEach(function() {
   	module('profileEditor');
@@ -20,6 +21,10 @@ describe('Unit: valid factory injection', function() {
   	inject(function(_accelSegmentFactory_) {
   		accelSegmentFactory =_accelSegmentFactory_;
   	});
+
+    inject(function(_FastMath_) {
+      fm=_FastMath_;
+    });
 
   });
   
@@ -46,6 +51,7 @@ describe('Unit: polynomial factory', function() {
   "use strict";
 
   var polynomialFactory;
+  var fm;
 
   beforeEach(function() {
     module('profileEditor');
@@ -54,6 +60,9 @@ describe('Unit: polynomial factory', function() {
       polynomialFactory=_polynomialFactory_;
     });
 
+    inject(function(_FastMath_) {
+      fm=_FastMath_;
+    });
 
   });
 
@@ -115,6 +124,55 @@ describe('Unit: polynomial factory', function() {
 
   });
 
+  it('should calculate roots of cubic polynomial [1,-6,12,-8]', function(){
+
+    var poly=polynomialFactory.CreatePolyAbCd([1,-6,12,-8],0);
+
+    var roots = poly.Roots();
+
+    expect(angular.isArray(roots));
+    expect(fm.equal(roots[0],2)).toBe(true);
+
+  });
+
+
+    it('should calculate roots of cubic polynomial [1,6,12,8]', function(){
+
+    var poly=polynomialFactory.CreatePolyAbCd([1,6,12,8],0);
+
+    var roots = poly.Roots();
+
+    expect(angular.isArray(roots));
+    expect(fm.equal(roots[0],-2)).toBe(true);
+
+
+  });
+
+
+
+    it('should calculate roots of quadratic polynomial [0,1,0,-1]', function(){
+
+    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,-1],0);
+
+    var roots = poly.Roots();
+
+    expect(angular.isArray(roots));
+    expect(fm.equal(roots[0],1)).toBe(true);
+
+
+  });
+
+    it('should calculate roots of quadratic polynomial [0,1,0,1]', function(){
+
+    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,1],0);
+
+    var roots = poly.Roots();
+
+    expect(angular.isArray(roots));
+    expect(roots.length).toBe(0);
+
+
+  });
 
 
 });
