@@ -174,7 +174,7 @@ describe('Unit: motionProfileFactory testing', function() {
     expect(profile.SegmentKeys.length).toBe(2);
 
     expect(profile.SegmentKeys[0]).toBe(0);
-    expect(profile.SegmentKeys[1]).toBe(1);
+    expect(profile.SegmentKeys[1]).toBe(1.0);
 
   });
 
