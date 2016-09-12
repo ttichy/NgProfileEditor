@@ -17,18 +17,17 @@ app.service('ProfileHelper', ['FastMath', 'basicSegmentFactory', function(fastMa
 
 			return sorted;
 
-
 		},
 
 		validateSegments: function(basicSegments) {
 			if (!angular.isArray(basicSegments))
 				throw new Error('sortBasicSegments expects an array');
 
-			for (var i = 0; i >= basicSegments.length - 1; i++) 	
+			for (var i = 0; i <= basicSegments.length - 1; i++) 	
 			{
 				var segment=basicSegments[i];
 
-				if (!(segment instanceof basicSegmentFactory.MotionSegment))
+				if (!(segment instanceof basicSegmentFactory.BasicMotionSegment))
 					throw new Error('segment `'+i+'` is not MotionSegment type');
 
 				if(fastMath.equal(segment.initialTime,segment.finalTime))
@@ -39,7 +38,7 @@ app.service('ProfileHelper', ['FastMath', 'basicSegmentFactory', function(fastMa
 
 				//skip this for the first segment
 				if(i>0)
-					if(fastMath.notEqual(segment.initialTime,basicSegments[i-1].tf))
+					if(fastMath.notEqual(segment.initialTime,basicSegments[i-1].finalTime))
 						throw new Error('Segment starting at '+segment.initialTime+' does not have t0 same as previous segment tf');
 
 			}

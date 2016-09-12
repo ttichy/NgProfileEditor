@@ -9,7 +9,8 @@
 var app=angular.module('profileEditor');
 
 
-app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory','FastMath', function(basicSegmentFactory, accelSegmentFactory, fastMath) {
+app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory','FastMath','ProfileHelper',
+ function(basicSegmentFactory, accelSegmentFactory, fastMath, profileHelper) {
 
 	var factory = {};
 
@@ -113,7 +114,9 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			this.SegmentKeys.push(segment.initialTime);
 		}
 
-		//TODO: need some checking to make sure we are building a contiguous profile
+		//validate all segments
+		profileHelper.validateSegments(this.GetAllBasicSegments());
+		//TODO: explore faster way to validate profile segments
 
 	};
 

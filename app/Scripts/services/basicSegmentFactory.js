@@ -4,7 +4,7 @@ var app=angular.module('profileEditor');
 
 app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(polynomialFactory,FastMath) {
 
-	var MotionSegment = function(t0,tf, positionPolyCoeffs) {
+	var BasicMotionSegment = function(t0,tf, positionPolyCoeffs) {
 		if(!angular.isNumber(t0))
 			throw new Error('initial time t0 is not a number');
 		if(!angular.isNumber(tf))
@@ -29,20 +29,20 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 	};
 
 
-	MotionSegment.prototype.EvaluatePositionAt = function(x) {
+	BasicMotionSegment.prototype.EvaluatePositionAt = function(x) {
 		return this.positionPoly.EvaluateAt(x);
 	};
 
 
-	MotionSegment.prototype.EvaluateVelocityAt = function(x) {
+	BasicMotionSegment.prototype.EvaluateVelocityAt = function(x) {
 		return this.velocityPoly.EvaluateAt(x);
 	};
 
-	MotionSegment.prototype.EvaluateAccelerationAt = function(x) {
+	BasicMotionSegment.prototype.EvaluateAccelerationAt = function(x) {
 		return this.accelPoly.EvaluateAt(x);
 	};
 
-	MotionSegment.prototype.EvaluateJerkAt = function(x) {
+	BasicMotionSegment.prototype.EvaluateJerkAt = function(x) {
 		return this.jerkPoly.EvaluateAt(x);
 	};
 
@@ -57,13 +57,13 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 		if(!Array.isArray(positionPolyCoeffs) || positionPolyCoeffs.length !=4)
 			throw new Error('expecting array of length 4');
 
-		var segment = new MotionSegment(t0,tf,positionPolyCoeffs);
+		var segment = new BasicMotionSegment(t0,tf,positionPolyCoeffs);
 
 		return segment;
 
 	};
 
-	factory.MotionSegment = MotionSegment;
+	factory.BasicMotionSegment = BasicMotionSegment;
 
 	return factory;
 
