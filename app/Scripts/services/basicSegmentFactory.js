@@ -63,6 +63,7 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 
 	};
 
+	factory.MotionSegment = MotionSegment;
 
 	return factory;
 

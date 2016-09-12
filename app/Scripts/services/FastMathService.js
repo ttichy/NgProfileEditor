@@ -120,7 +120,24 @@ var epsilon = 2.220446049250313e-16;
 				    	return false;
 				}
 				return true;
+			},
 
+			/**
+			 * Helper function to be used when comparing numbers
+			 * @param  {Number} a first number
+			 * @param  {Number} b second number
+			 * @return {Number}   positive if a>b, negative if a<b, zero if a==b
+			 */
+			compareNumbers: function(a,b){
+
+				//not using straight a-b comparison here in order to avoid
+				//rounding errors!
+				if(this.gt(a,b))
+					return 1;
+				if(this.lt(a,b))
+					return -1;
+
+				return 0;
 			}
 		};
 });

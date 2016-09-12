@@ -41,4 +41,7 @@ describe('Unit: fastmath functions-', function() {
     expect(fm.areNumeric(4.5,-4.5,0,-1e-4, NaN)).toBe(false);
   });
 
+  
+
+
 });

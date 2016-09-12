@@ -231,8 +231,6 @@ describe('Unit: motionProfileFactory testing', function() {
     profile.PutSegment(accelSegment);
 
 
-    debugger;
-
     profile.DeleteSegment(accelSegment);
 
     var segments = profile.GetAllBasicSegments();
