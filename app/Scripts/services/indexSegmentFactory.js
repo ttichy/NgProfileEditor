@@ -2,24 +2,32 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('accelSegmentFactory', ['basicSegmentFactory','FastMath', function(basicSegmentFactory,fastMath) {
+app.factory('indexSegmentFactory', ['accelSegmentFactory','FastMath', function(accelSegmentFactory,fastMath) {
 
 	var factory={};
 
 	/**
-	 * Makes a new AccelMotionSegment given velocity information
-	 * @param {[type]} t0 [initial time]
-	 * @param {[type]} tf [final time]
-	 * @param {[type]} p0 [initial position]
-	 * @param {[type]} v0 [final position]
-	 * @param {[type]} vf [final velocity]
-	 * @param {[type]} jPct  [jerk as a percent of time]
-	 * @returns {AccelMotionSegment} [freshly created accel segment]
+	 * Makes a new IndexMotionSegment given velocity information
+	 * @param {number} t0 [initial time in sec]
+	 * @param {number} tf [final time in sec]
+	 * @param {number} p0 [initial position in m or rad]
+	 * @param {number} v0 [initial velocity in m/s or rad/s]
+	 * @param {number} vf [final velocity in m/s or rad/s]
+	 * @param {number} pf [final position in m or rad]
+	 * @param {number} jPctAccel  [jerk as a percent of time during acceleration in pct]
+	 * @param {number} jPctDecel [jerk as a percent of time during deceleration in pct]
+	 * @param {number} vLim [velocity limit in m/s or rad/s]
+	 * @param {string} index type [trapezoidal or triangular]
 	 */
-	factory.MakeFromVelocity= function(t0,tf,p0,v0,vf,jPct){
+	factory.MakeFromVelocity= function(t0,tf,p0,v0,vf,pf,jPctAccel, jPctDecel, vLim, indexType){
 
-		if(angular.isUndefined(jPct) || jPct<0 || jPct>1)
-			throw new Error('expecting jerk between <0,1>');
+		if(angular.isUndefined(jPctAccel) || jPctAccel<0 || jPctAccel>1)
+			throw new Error('expecting accel jerk between <0,1>');
+
+		if(angular.isUndefined(jPctDecel) || jPctDecel<0 || jPctDecel>1)
+			throw new Error('expecting decel jerk between <0,1>');
+
+
 		var basicSegment, basicSegment2, basicSegment3;
 		var accelSegment;
 		var coeffs, coeffs1,coeffs2,coeffs3,coeffs4;

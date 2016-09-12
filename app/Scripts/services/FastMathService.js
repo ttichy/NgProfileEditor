@@ -93,6 +93,34 @@ var epsilon = 2.220446049250313e-16;
 				}
 
 				return parseFloat(num.toFixed(p));
+			},
+			/**
+			 * Returns true if parameter is numeric
+			 * @param  {object}  n object to test
+			 * @return {Boolean}   true if object is numeric
+			 */
+			isNumeric: function(n) {
+				if(arguments.length !=1)
+					throw new Error('isNumeric expects one parameter');
+  				return !isNaN(parseFloat(n)) && isFinite(n);
+			},
+
+			/**
+			 * Determines if all members of array are numeric
+			 * @return {Boolean}      true if all array members are numeric
+			 */
+			areNumeric: function() {
+
+				var argLength = arguments.length;
+				if(argLength===0)
+					return false;
+
+				  for (var i = 0; i < argLength; i++) {
+				    if(!this.isNumeric(arguments[i]))
+				    	return false;
+				}
+				return true;
+
 			}
 		};
 });
