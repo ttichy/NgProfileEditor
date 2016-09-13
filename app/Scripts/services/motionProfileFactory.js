@@ -30,7 +30,8 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		if (type === "linear")
 			this.ProfileType = "linear";
 
-		this.Segments = {}; //associative array for all segments
+		this.Segments = {}; //associative array for all segments. Key is initial time
+
 		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments. Always sorted.
 
 	};
@@ -68,14 +69,71 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 
 
 	/**
-	 * Puts segment into the profile
-	 * @param {MotionSegment} segment to be put into the profile
+	 * Checks and returns if exists an existing segment beginning at time initialTime
+	 * @param {number} initialTime initial time of segment to check
+	 * @returns {MotionSegment} existing segment or null if none found
+	 */
+	MotionProfile.prototype.GetExistingSegment = function(initialTime){
+
+		//quick check existing
+		var existing=this.Segments[initialTime];
+
+		var numSegments=this.SegmentKeys.length;
+
+		//may be past the profile
+		if(initialTime > this.SegmentKeys[numSegments-1])
+			return null;
+
+		//due to roundoff error, initial time may not match exactly, so check the long way
+		if(!angular.isObject(existing))
+		{
+			var result=fastMath.binaryIndexOf.call(this.SegmentKeys,initialTime);
+
+			if(result>0)
+				throw new Error('expecting negative result here, since exact match was checked above');
+
+			var idx = result;
+			if(result<0)
+				idx=~result;
+			if(fastMath.equal(this.SegmentKeys[idx],initialTime))
+				return this.Segments[idx];
+			//check the index before if it exists
+			if(idx>0 && fastMath.equal(this.SegmentKeys[idx-1],initialTime))
+				return this.Segments[idx-1];
+			//check the index after if it exists
+			if(idx<numSegments-1 && fastMath.equal(this.SegmentKeys[idx+1],initialTime))
+				return this.Segments[idx+1];
+		
+			return null;	//not found
+		}
+
+		return existing;
+
+		
+
+
+	};
+
+	/**
+	 * Inserts or appends a segment into the motion profile
+	 * @param {MotionSegment} segment Segment to insert into the profile
+	 */
+	MotionProfile.prototype.InsertSegment=function(segment) {
+		
+		//quick check existing
+		var existing=this.Segments[segment.initialTime];
+	};
+
+	/**
+	 * Puts segment into the profile ? WHAT DOES THIS DO??
+	 * @param {MotionSegment} segment to be put into the profile. 
 	 */
 	MotionProfile.prototype.PutSegment = function(segment) {
 
-		// is there already a segment at this initial time?		
+		// is there already a segment at this initial time?	
+		
+		// check the fast way for an existing segment
 		var existing=this.Segments[segment.initialTime];
-
 
 		if (angular.isObject(existing)) {
 			//logic to insert the segment

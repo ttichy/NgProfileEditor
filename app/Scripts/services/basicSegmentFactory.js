@@ -33,6 +33,15 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 		return this.positionPoly.EvaluateAt(x);
 	};
 
+	/**
+	 * Primitive value of the BasicMotionSegment object
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf
+	 * @return {number} initial time of the segment
+	 */
+	BasicMotionSegment.prototype.valueOf = function() {
+		return this.initialTime;
+	};
+
 
 	BasicMotionSegment.prototype.EvaluateVelocityAt = function(x) {
 		return this.velocityPoly.EvaluateAt(x);
