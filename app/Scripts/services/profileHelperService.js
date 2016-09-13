@@ -38,8 +38,18 @@ app.service('ProfileHelper', ['FastMath', 'basicSegmentFactory', function(fastMa
 
 				//skip this for the first segment
 				if(i>0)
-					if(fastMath.notEqual(segment.initialTime,basicSegments[i-1].finalTime))
-						throw new Error('Segment starting at '+segment.initialTime+' does not have t0 same as previous segment tf');
+				{
+					if (fastMath.notEqual(segment.initialTime, basicSegments[i - 1].finalTime))
+						throw new Error('Segment starting at ' + segment.initialTime + ' does not have t0 same as previous segment tf');
+
+					if(fastMath.notEqual(segment.initialVelocity, basicSegments[i-1].finalVelocity))
+						throw new Error('Segment starting at ' + segment.initialTime + ': previous segment final velocity does not match');
+
+					if (fastMath.notEqual(segment.initialPosition, basicSegments[i - 1].finalPosition))
+						throw new Error('Segment starting at ' + segment.initialTime + ': previous segment final position does not match');
+
+
+				}
 
 			}
 			return true;

@@ -90,7 +90,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 			var result=fastMath.binaryIndexOf.call(this.SegmentKeys,initialTime);
 
 			if(result>0)
-				throw new Error('expecting negative result here, since exact match was checked above');
+				throw new Error('expecting negative result since exact match was checked above');
 
 			var idx = result;
 			if(result<0)
@@ -120,8 +120,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 	 */
 	MotionProfile.prototype.InsertSegment=function(segment) {
 		
-		//quick check existing
-		var existing=this.Segments[segment.initialTime];
+		var existing=this.GetExistingSegment(segment.initialTime);
 	};
 
 	/**
@@ -131,9 +130,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 	MotionProfile.prototype.PutSegment = function(segment) {
 
 		// is there already a segment at this initial time?	
-		
-		// check the fast way for an existing segment
-		var existing=this.Segments[segment.initialTime];
+		var existing=this.GetExistingSegment(segment.initialTime);
 
 		if (angular.isObject(existing)) {
 			//logic to insert the segment

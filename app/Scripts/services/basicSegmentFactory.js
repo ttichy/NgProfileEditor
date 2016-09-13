@@ -25,6 +25,12 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 		this.accelPoly = this.velocityPoly.Derivative();
 		this.jerkPoly = this.accelPoly.Derivative();
 
+		this.initialVelocity = this.EvaluateVelocityAt(t0);
+		this.finalVelocity = this.EvaluateVelocityAt(tf);
+
+		this.initialPosition = this.EvaluatePositionAt(t0);
+		this.finalPosition=this.EvaluatePositionAt(tf);
+
 
 	};
 
@@ -54,6 +60,8 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 	BasicMotionSegment.prototype.EvaluateJerkAt = function(x) {
 		return this.jerkPoly.EvaluateAt(x);
 	};
+
+
 
 
 
