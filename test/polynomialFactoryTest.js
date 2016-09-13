@@ -18,8 +18,8 @@ describe('Unit: valid factory injection', function() {
   		basicSegmentFactory = _basicSegmentFactory_;
   	});
 
-  	inject(function(_accelSegmentFactory_) {
-  		accelSegmentFactory =_accelSegmentFactory_;
+  	inject(function(_AccelSegment_) {
+  		accelSegmentFactory =_AccelSegment_;
   	});
 
     inject(function(_FastMath_) {

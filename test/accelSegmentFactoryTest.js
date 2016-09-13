@@ -7,8 +7,8 @@ describe('Unit: accelSegmentFactory testing', function() {
   beforeEach(function() {
     module('profileEditor');
 
-    inject(function(_accelSegmentFactory_) {
-      accelSegmentFactory = _accelSegmentFactory_;
+    inject(function(_AccelSegment_) {
+      accelSegmentFactory = _AccelSegment_;
     });
   });
 

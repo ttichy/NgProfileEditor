@@ -21,9 +21,9 @@ describe('Unit: profile helper functions-', function() {
       basicSegmentFactory = _basicSegmentFactory_;
     });
 
-    inject(function(_motionProfileFactory_, _accelSegmentFactory_) {
+    inject(function(_motionProfileFactory_, _AccelSegment_) {
       motionProfileFactory = _motionProfileFactory_;
-      accelSegmentFactory = _accelSegmentFactory_;
+      accelSegmentFactory = _AccelSegment_;
     });
   });
 

@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('accelSegmentFactory', ['basicSegmentFactory','FastMath', function(basicSegmentFactory,fastMath) {
+app.factory('AccelSegment', ['basicSegmentFactory','FastMath', function(basicSegmentFactory,fastMath) {
 
 	var factory={};
 

@@ -7,9 +7,9 @@ describe('Unit: motionProfileFactory testing', function() {
     beforeEach(function() {
         module('profileEditor');
 
-        inject(function(_motionProfileFactory_, _accelSegmentFactory_, _FastMath_) {
+        inject(function(_motionProfileFactory_, _AccelSegment_, _FastMath_) {
             motionProfileFactory = _motionProfileFactory_;
-            accelSegmentFactory = _accelSegmentFactory_;
+            accelSegmentFactory = _AccelSegment_;
             fastMath = _FastMath_;
         });
     });

@@ -11,7 +11,7 @@
 var app=angular.module('profileEditor');
 
 
-app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory','FastMath','ProfileHelper',
+app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','FastMath','ProfileHelper',
  function(basicSegmentFactory, accelSegmentFactory, fastMath, profileHelper) {
 
 	var factory = {};
