@@ -40,7 +40,7 @@ describe('Unit: profile helper functions-', function() {
     
     profile.PutSegment(accelSegment);
 
-    ph.validateSegments(profile.GetAllBasicSegments());
+    ph.validateBasicSegments(profile.GetAllBasicSegments());
 
 
   });

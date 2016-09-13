@@ -1,5 +1,7 @@
 /**
- * Creates MotionProfile. MotionProfile object contains a collection of all known segment types.
+ * Creates MotionProfile. MotionProfile is a list of MotionSegments.
+ * MotionSegments represent the various available segments in a profile, such as BasicSegment, AccelSegment,
+ * CamSegment, IndexSegment, etc...
  * 
  */
 
@@ -33,6 +35,17 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		this.Segments = {}; //associative array for all segments. Key is initial time
 
 		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments. Always sorted.
+
+
+		/**
+		 * Gets segment key from segment. This function is necessary, as segment keys may not be exact match due to rounding
+		 * @param {[type]} segment [description]
+		 */
+		var GetSegmentKey = function(segment)
+		{
+			var exact = this.SegmentKeys[seg]
+		}
+
 
 	};
 
@@ -120,7 +133,22 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 	 */
 	MotionProfile.prototype.InsertSegment=function(segment) {
 		
+		//inserting a segment means that it is put in place of an existing segment
 		var existing=this.GetExistingSegment(segment.initialTime);
+		if(!angular.isObject(existing))
+			throw new Error('Cannot find a segment at time '+segment.initialTime+ ' where new segment should be inserted');
+
+		var segTime = segment.finalTime-segment.initialTime;
+		if(fastMath.leq(segTime,0))
+			throw new Error('Invalid segment times when inserting a segment');
+
+
+		//insert segment
+
+		//change times for all the other ones
+
+
+
 	};
 
 	/**
@@ -170,7 +198,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'accelSegmentFactory
 		}
 
 		//validate all segments
-		profileHelper.validateSegments(this.GetAllBasicSegments());
+		profileHelper.validateBasicSegments(this.GetAllBasicSegments());
 		//TODO: explore faster way to validate profile segments
 
 	};

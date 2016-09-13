@@ -2,19 +2,11 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(polynomialFactory,FastMath) {
+app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMath',function(polynomialFactory,MotionSegment,FastMath) {
 
 	var BasicMotionSegment = function(t0,tf, positionPolyCoeffs) {
-		if(!angular.isNumber(t0))
-			throw new Error('initial time t0 is not a number');
-		if(!angular.isNumber(tf))
-			throw new Error('final time tf is not a number');
 
-		if(FastMath.lt(tf,t0))
-			throw new Error('expecting final time to be greater than initial time');
-
-		this.initialTime = t0;
-		this.finalTime = tf;
+		MotionSegment.MotionSegment.call(this,t0,tf);
 
 		var poly = new polynomialFactory.CreatePolyAbCd(positionPolyCoeffs,t0,tf);
 
@@ -25,6 +17,8 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 		this.accelPoly = this.velocityPoly.Derivative();
 		this.jerkPoly = this.accelPoly.Derivative();
 
+		
+		//wait until polynomials are assigned, then calculate initial and final vel/pos
 		this.initialVelocity = this.EvaluateVelocityAt(t0);
 		this.finalVelocity = this.EvaluateVelocityAt(tf);
 
@@ -33,6 +27,9 @@ app.factory('basicSegmentFactory', ['polynomialFactory','FastMath',function(poly
 
 
 	};
+
+	BasicMotionSegment.prototype = Object.create(MotionSegment.MotionSegment.prototype);
+	BasicMotionSegment.prototype.constructor = BasicMotionSegment;
 
 
 	BasicMotionSegment.prototype.EvaluatePositionAt = function(x) {

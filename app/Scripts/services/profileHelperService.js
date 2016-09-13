@@ -19,7 +19,7 @@ app.service('ProfileHelper', ['FastMath', 'basicSegmentFactory', function(fastMa
 
 		},
 
-		validateSegments: function(basicSegments) {
+		validateBasicSegments: function(basicSegments) {
 			if (!angular.isArray(basicSegments))
 				throw new Error('sortBasicSegments expects an array');
 

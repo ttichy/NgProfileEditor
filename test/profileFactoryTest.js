@@ -298,7 +298,7 @@ describe('Unit: motionProfileFactory testing', function() {
     });
 
 
-    it('should find existing segments, even if initialTime is off by epsilon', function() {
+    it('should find existing segments, even if initialTime is off by some number less than epsilon', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
