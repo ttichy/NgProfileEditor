@@ -37,14 +37,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments. Always sorted.
 
 
-		/**
-		 * Gets segment key from segment. This function is necessary, as segment keys may not be exact match due to rounding
-		 * @param {[type]} segment [description]
-		 */
-		var GetSegmentKey = function(segment)
-		{
-			var exact = this.SegmentKeys[seg]
-		}
+
 
 
 	};
@@ -71,14 +64,28 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 	};
 
 	/**
-	 * Gets segment at specified time
-	 * @param {float} time 
-	 * @returns {Segment} motionsegment at specified time
+	 * Gets segment index given initial time. This function is necessary, 
+	 * as segment keys may not be exact match due to rounding errors
+	 * @param {[type]} segment [description]
 	 */
-	MotionProfile.prototype.GetSegmentAtInitialTime = function(time) {
-		// TODO: handle errors?
-		return this.Segments[time];
+	MotionProfile.prototype.GetSegmentIndex = function(initialTime) {
+		var exact = fastMath.binaryIndexOf.call(this.SegmentKeys, initialTime);
+		if (exact >= 0)
+			return exact;
+
+		var idx = ~exact;
+		if (fastMath.equal(this.SegmentKeys[idx], initialTime))
+			return idx;
+
+		if (idx > 0 && fastMath.equal(this.SegmentKeys[idx - 1], initialTime))
+			return idx - 1;
+		if (idx < this.SegmentKeys.length - 1 && fastMath.equal(this.SegmentKeys[idx + 1]))
+			return idx + 1;
+
+		return -1;
+
 	};
+
 
 
 	/**
@@ -100,24 +107,13 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 		//due to roundoff error, initial time may not match exactly, so check the long way
 		if(!angular.isObject(existing))
 		{
-			var result=fastMath.binaryIndexOf.call(this.SegmentKeys,initialTime);
+			var index=this.GetSegmentIndex(initialTime);
 
-			if(result>0)
-				throw new Error('expecting negative result since exact match was checked above');
+			if(index>=0)
+				return this.Segments[this.SegmentKeys[index]];
 
-			var idx = result;
-			if(result<0)
-				idx=~result;
-			if(fastMath.equal(this.SegmentKeys[idx],initialTime))
-				return this.Segments[idx];
-			//check the index before if it exists
-			if(idx>0 && fastMath.equal(this.SegmentKeys[idx-1],initialTime))
-				return this.Segments[idx-1];
-			//check the index after if it exists
-			if(idx<numSegments-1 && fastMath.equal(this.SegmentKeys[idx+1],initialTime))
-				return this.Segments[idx+1];
-		
-			return null;	//not found
+			return null;
+
 		}
 
 		return existing;
