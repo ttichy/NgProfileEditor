@@ -16,11 +16,11 @@ describe('Unit: accelSegmentFactory testing', function() {
     
     var seg = accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
     
-    expect(seg.GetAllBasicSegments().length).toBe(3);
+    expect(seg.GetAllSegments().length).toBe(3);
 
-    var seg1=seg.GetAllBasicSegments()[0];
-    var seg2=seg.GetAllBasicSegments()[1];
-    var seg3=seg.GetAllBasicSegments()[2];
+    var seg1=seg.GetAllSegments()[0];
+    var seg2=seg.GetAllSegments()[1];
+    var seg3=seg.GetAllSegments()[2];
 
 
 
@@ -46,11 +46,11 @@ describe('Unit: accelSegmentFactory testing', function() {
 
     var seg = accelSegmentFactory.MakeFromVelocity(2,4,10,10,0,0.5);
     
-    expect(seg.GetAllBasicSegments().length).toBe(3);
+    expect(seg.GetAllSegments().length).toBe(3);
 
-    var seg1=seg.GetAllBasicSegments()[0];
-    var seg2=seg.GetAllBasicSegments()[1];
-    var seg3=seg.GetAllBasicSegments()[2];
+    var seg1=seg.GetAllSegments()[0];
+    var seg2=seg.GetAllSegments()[1];
+    var seg3=seg.GetAllSegments()[2];
 
     expect(seg1.initialTime).toBe(2);
     expect(seg1.finalTime).toBe(2.5);

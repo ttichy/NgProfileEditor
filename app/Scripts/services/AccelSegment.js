@@ -166,9 +166,6 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		return segment[0];
 	};
 
-	AccelMotionSegment.prototype.GetAllBasicSegments = function() {
-		return this.segments.GetAllSegments();
-	};
 
 
 	/**

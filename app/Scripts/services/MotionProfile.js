@@ -44,7 +44,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		var allSegments=[];
 		// using associative array to hold all segments -> quick and easy to search
 		this.stash.GetAllSegments().forEach(function(element){
-			allSegments.push(element.GetAllBasicSegments());
+			allSegments.push(element.GetAllSegments());
 		});
 
 		// previous code gets us an array of arrays, we need to flatten it

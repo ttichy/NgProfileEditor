@@ -2,7 +2,7 @@ describe('Unit: motionProfileFactory testing', function() {
     "use strict";
 
     var motionProfileFactory;
-    var accelSegmentFactory, fastMath;
+    var accelSegmentFactory, fastMath,ph;
 
     beforeEach(function() {
         module('profileEditor');
@@ -11,6 +11,10 @@ describe('Unit: motionProfileFactory testing', function() {
             motionProfileFactory = _motionProfileFactory_;
             accelSegmentFactory = _AccelSegment_;
             fastMath = _FastMath_;
+        });
+
+        inject(function(_ProfileHelper_) {
+            ph = _ProfileHelper_;
         });
     });
 
@@ -308,6 +312,34 @@ describe('Unit: motionProfileFactory testing', function() {
         expect(existing).toBe(accelSegment2);
 
     });
+
+
+    it('should insert a segment in between two other segments', function() {
+
+        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+
+        var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+
+        profile.AppendSegment(accelSegment1);
+
+        var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+
+        profile.AppendSegment(accelSegment2);
+
+        var accelSegment3=accelSegmentFactory.MakeFromVelocity(2, 4, 10, 5, 0, 0.5);
+
+        profile.InsertSegment(accelSegment3);
+
+        //after inserting, there should be 3 segments total
+        expect(profile.GetAllSegments().length).toBe(3);
+
+        //also, the profile needs to be valid
+        expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
+
+
+
+    });
+
 
 
 });

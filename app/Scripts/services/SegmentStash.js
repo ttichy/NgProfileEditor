@@ -33,7 +33,7 @@ app.factory('SegmentStash',['FastMath',  function(FastMath) {
 	 * @returns {MotionSegment} newly added segment
 	 */
 	SegmentStash.prototype.Insert = function(segment) {
-		var index=this.GetSegmentIndex(segment);
+		var index=this.GetSegmentIndex(segment.initialTime);
 
 		if(index <0)
 			return null;
@@ -41,7 +41,7 @@ app.factory('SegmentStash',['FastMath',  function(FastMath) {
 		//insert segment into the array
 		this.segments.splice(index,0,segment);
 
-		var segLength=segment.finalTime-segment.initalTime;
+		var segLength=segment.finalTime-segment.initialTime;
 
 		this.UpdateSegmentsAfter(index+1,segLength);
 
@@ -96,21 +96,21 @@ app.factory('SegmentStash',['FastMath',  function(FastMath) {
 	/**
 	 * Gets segment index given initial time. This function is necessary, 
 	 * as segment keys may not be exact match due to rounding errors
-	 * @param {Number} initialTime segment identifier
+	 * @param {Number} segment segment whose initial time is to be used to locate the index
 	 */
-	SegmentStash.prototype.GetSegmentIndex=function(initialTime){
+	SegmentStash.prototype.GetSegmentIndex=function(segment){
 		//quick check existing
-		var exact = FastMath.binaryIndexOf.call(this.segments, initialTime);
+		var exact = FastMath.binaryIndexOf.call(this.segments, segment);
 		if (exact >= 0)
 			return exact;
 
 		//need to check when segment times are subject to rounding errors
 
 		var idx = ~exact;
-		if (FastMath.equal(this.segments[idx], initialTime))
+		if (FastMath.equal(this.segments[idx], segment))
 			return idx;
 
-		if (idx > 0 && FastMath.equal(this.segments[idx - 1], initialTime))
+		if (idx > 0 && FastMath.equal(this.segments[idx - 1], segment))
 			return idx - 1;
 		if (idx < this.segments.length - 1 && FastMath.equal(this.segments[idx + 1]))
 			return idx + 1;
