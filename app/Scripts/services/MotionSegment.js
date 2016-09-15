@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('MotionSegment', ['polynomialFactory', 'FastMath', function(polynomialFactory, fastMath) {
+app.factory('MotionSegment', ['polynomialFactory', 'FastMath','SegmentStash', function(polynomialFactory, fastMath, SegmentStash) {
 
 	/**
 	 * MotionSegment is a generic segment of which a motion profile consists of
@@ -24,7 +24,7 @@ app.factory('MotionSegment', ['polynomialFactory', 'FastMath', function(polynomi
 		this.finalTime=tf;
 
 		//each segment can hold other segments
-		this.segments=[];
+		this.segments=SegmentStash.MakeStash();
 
 	};
 
@@ -40,7 +40,7 @@ app.factory('MotionSegment', ['polynomialFactory', 'FastMath', function(polynomi
 
 
 	MotionSegment.prototype.GetAllSegments = function() {
-		return this.segments;
+		return this.segments.GetAllSegments();
 	};
 
 	var factory={};

@@ -119,7 +119,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		this.initialTime=basicSegments[0].initialTime;
 		this.finalTime=basicSegments[basicSegments.length-1].finalTime;
 
-		this.basicSegments=basicSegments;
+		this.segments.InitializeWithSegments(basicSegments);
 	};
 
 
@@ -150,7 +150,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 
 	AccelMotionSegment.prototype.FindSegmentAtTime = function(time){
-		var segment = this.basicSegments.filter(function(bSeg){
+		var segment = this.segments.GetAllSegments().filter(function(bSeg){
 			return fastMath.geq(time,bSeg.initialTime) && fastMath.leq(time,bSeg.finalTime);
 		});
 		
@@ -167,7 +167,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	};
 
 	AccelMotionSegment.prototype.GetAllBasicSegments = function() {
-		return this.basicSegments;
+		return this.segments.GetAllSegments();
 	};
 
 
@@ -179,8 +179,8 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {float} p0 new initial position
 	 */
 	AccelMotionSegment.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
-		var last=this.basicSegments.length-1;
-		var tf=this.basicSegments[last].finalTime;
+		var last=this.segments.GetAllSegments.length-1;
+		var tf=this.segments.GetAllSegments[last].finalTime;
 		var af = this.EvaluateAccelerationAt(tf);
 		var vf=this.EvaluateVelocityAt(tf);
 
@@ -191,8 +191,8 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 			jPct=1;
 		else
 		{
-			var firstDuration=this.basicSegments[0].finalTime-this.basicSegments[0].initialTime;
-			var totalDuration=this.basicSegments[2].finalTime-this.basicSegments[0].initialTime;
+			var firstDuration=this.segments.GetAllSegments[0].finalTime-this.segments.GetAllSegments[0].initialTime;
+			var totalDuration=this.segments.GetAllSegments[2].finalTime-this.segments.GetAllSegments[0].initialTime;
 			jPct=2*firstDuration/totalDuration;
 
 		}

@@ -17,7 +17,15 @@ app.factory('SegmentStash',['FastMath',  function(FastMath) {
 	};
 
 
-	
+	/**
+	 * Initialize the stash with segments
+	 * @param {Array} segmentArr Array of segments to initalize with 
+	 */
+	SegmentStash.prototype.InitializeWithSegments = function(segmentArr) {
+		if(!Array.isArray(segmentArr))
+			throw new Error('to initialize SegmentStash, pass in an array of segments');
+		this.segments=segmentArr;
+	};
 
 	/**
 	 * Inserts a segment. The position is taken from segment.initialTime
