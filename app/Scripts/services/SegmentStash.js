@@ -8,23 +8,30 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.service('SegmentStash',['FastMath',  function(FastMath) {
+app.factory('SegmentStash',['FastMath',  function(FastMath) {
 
-	var segments=[];
+	var SegmentStash=function() {
+
+		this.segments=[];
+
+	};
+
+
+	
 
 	/**
 	 * Inserts a segment. The position is taken from segment.initialTime
 	 * @param {MotionSegment} segment segment to insert
 	 * @returns {MotionSegment} newly added segment
 	 */
-	this.Insert = function(segment) {
+	SegmentStash.prototype.Insert = function(segment) {
 		var index=this.GetSegmentIndex(segment);
 
 		if(index <0)
 			return null;
 
 		//insert segment into the array
-		segments.splice(index,0,segment);
+		this.segments.splice(index,0,segment);
 
 		var segLength=segment.finalTime-segment.initalTime;
 
@@ -38,9 +45,9 @@ app.service('SegmentStash',['FastMath',  function(FastMath) {
 	 * Appends a segment to the end
 	 * @param {MotionSegment} segment segment to append
 	 */
-	this.Append = function(segment){
+	SegmentStash.prototype.Append = function(segment){
 
-		segments.push(segment);
+		this.segments.push(segment);
 
 	};
 
@@ -50,13 +57,13 @@ app.service('SegmentStash',['FastMath',  function(FastMath) {
 	 * @param {Number} startingIndex Where to start updating
 	 * @param {Number} offset        positive or negative number of seconds to update subsequent indeces
 	 */
-	this.UpdateSegmentsAfter = function(startingIndex,offset) {
+	SegmentStash.prototype.UpdateSegmentsAfter = function(startingIndex,offset) {
 		
 
 		//update segment times for segments after
-		for (var i = startingIndex; i < segments.length; i++) {
-			segments[i].initialTime+=offset;
-			segments[i].finalTime+=offset;
+		for (var i = startingIndex; i < this.segments.length; i++) {
+			this.segments[i].initialTime+=offset;
+			this.segments[i].finalTime+=offset;
 		}
 
 
@@ -68,12 +75,12 @@ app.service('SegmentStash',['FastMath',  function(FastMath) {
 	 * @param {number} initialTime initial time of segment to check
 	 * @returns {MotionSegment} existing segment or null if none found
 	 */
-	this.GetSegmentAt = function(initialTime) {
+	SegmentStash.prototype.GetSegmentAt = function(initialTime) {
 		var index = this.GetSegmentIndex(initialTime);
 		if(index<0)
 			return null;
 
-		return segments[index];
+		return this.segments[index];
 
 	};
 
@@ -83,21 +90,21 @@ app.service('SegmentStash',['FastMath',  function(FastMath) {
 	 * as segment keys may not be exact match due to rounding errors
 	 * @param {Number} initialTime segment identifier
 	 */
-	this.GetSegmentIndex=function(initialTime){
+	SegmentStash.prototype.GetSegmentIndex=function(initialTime){
 		//quick check existing
-		var exact = FastMath.binaryIndexOf.call(segments, initialTime);
+		var exact = FastMath.binaryIndexOf.call(this.segments, initialTime);
 		if (exact >= 0)
 			return exact;
 
 		//need to check when segment times are subject to rounding errors
 
 		var idx = ~exact;
-		if (FastMath.equal(segments[idx], initialTime))
+		if (FastMath.equal(this.segments[idx], initialTime))
 			return idx;
 
-		if (idx > 0 && FastMath.equal(segments[idx - 1], initialTime))
+		if (idx > 0 && FastMath.equal(this.segments[idx - 1], initialTime))
 			return idx - 1;
-		if (idx < segments.length - 1 && FastMath.equal(segments[idx + 1]))
+		if (idx < this.segments.length - 1 && FastMath.equal(this.segments[idx + 1]))
 			return idx + 1;
 
 		return -1;
@@ -108,10 +115,10 @@ app.service('SegmentStash',['FastMath',  function(FastMath) {
 	 * @param {Number} initialTime segment identifier
 	 * @returns {MotionSegment} The deleted segment or null if initialTime not valid
 	 */
-	this.DeleteAt = function(initialTime){
+	SegmentStash.prototype.DeleteAt = function(initialTime){
 		var index = this.GetSegmentIndex(initialTime);
 
-		var removed = segments.splice(index,1);
+		var removed = this.segments.splice(index,1);
 
 	};
 
@@ -119,8 +126,17 @@ app.service('SegmentStash',['FastMath',  function(FastMath) {
 	 * Get all segments currently in the stash
 	 * @returns {Array} returns array of all segments
 	 */
-	this.GetAllSegments = function() {
-		return segments;
+	SegmentStash.prototype.GetAllSegments = function() {
+		return this.segments;
 	};
+
+
+	var factory={};
+
+	factory.MakeStash=function(){
+		return new SegmentStash();
+	};
+
+	return factory;
 
 }]);
