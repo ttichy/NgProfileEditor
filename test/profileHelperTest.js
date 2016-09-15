@@ -34,11 +34,11 @@ describe('Unit: profile helper functions-', function() {
 
     var accelSegment=accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
 
-    profile.PutSegment(accelSegment);
+    profile.AppendSegment(accelSegment);
 
     accelSegment=accelSegmentFactory.MakeFromVelocity(2,4,10,10,0,0.5);
     
-    profile.PutSegment(accelSegment);
+    profile.AppendSegment(accelSegment);
 
     ph.validateBasicSegments(profile.GetAllBasicSegments());
 

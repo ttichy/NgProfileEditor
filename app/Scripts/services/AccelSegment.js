@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('AccelSegment', ['basicSegmentFactory','FastMath', function(basicSegmentFactory,fastMath) {
+app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', function(MotionSegment,basicSegmentFactory,fastMath) {
 
 	var factory={};
 
@@ -20,6 +20,8 @@ app.factory('AccelSegment', ['basicSegmentFactory','FastMath', function(basicSeg
 
 		if(angular.isUndefined(jPct) || jPct<0 || jPct>1)
 			throw new Error('expecting jerk between <0,1>');
+		
+
 		var basicSegment, basicSegment2, basicSegment3;
 		var accelSegment;
 		var coeffs, coeffs1,coeffs2,coeffs3,coeffs4;
@@ -103,6 +105,11 @@ app.factory('AccelSegment', ['basicSegmentFactory','FastMath', function(basicSeg
 		if(basicSegments.length<1 || basicSegments.length > 3)
 			throw new Error('Expecting aray length to be 1,2 or 3');
 
+		var t0=basicSegments[0].initialTime;
+		var tf=basicSegments[basicSegments.length-1].finalTime;
+
+		MotionSegment.MotionSegment.call(this,t0,tf);
+
 		//TODO: check ordering of the basicSegments (increasing time)
 
 		this.type='acceleration';
@@ -114,6 +121,10 @@ app.factory('AccelSegment', ['basicSegmentFactory','FastMath', function(basicSeg
 
 		this.basicSegments=basicSegments;
 	};
+
+
+	AccelMotionSegment.prototype = Object.create(MotionSegment.MotionSegment.prototype);
+	AccelMotionSegment.prototype.constructor = AccelMotionSegment;
 
 	AccelMotionSegment.prototype.EvaluatePositionAt = function(x) {
 		//which segment does x fall in
@@ -146,13 +157,16 @@ app.factory('AccelSegment', ['basicSegmentFactory','FastMath', function(basicSeg
 		if(!angular.isObject(segment[0]))
 			throw new Error("Couldn't find basic segment that contains time "+time);
 
-		if(segment.length > 1)
-			throw new Error("Found "+segment.length+" segments, expecting exactly one.");
+		// could have two segments, if time falls right at the end of the first segment
+		// and the beginning of 2nd
+		if(segment.length > 2)
+			throw new Error("Found "+segment.length+" segments, expecting 1 or 2.");
 
+		//since all profile variables (p,v,a) are continuous, we'll just pick the first one
 		return segment[0];
 	};
 
-	AccelMotionSegment.prototype.AllSegments = function() {
+	AccelMotionSegment.prototype.GetAllBasicSegments = function() {
 		return this.basicSegments;
 	};
 

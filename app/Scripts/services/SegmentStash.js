@@ -8,67 +8,119 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('SegmentStash',['FastMath',  function(FastMath) {
+app.service('SegmentStash',['FastMath',  function(FastMath) {
 
-	var SegmentStash = function() {
-
-		//backing array for segments
-		this.segments=[];
-
-	};
+	var segments=[];
 
 	/**
 	 * Inserts a segment. The position is taken from segment.initialTime
 	 * @param {MotionSegment} segment segment to insert
+	 * @returns {MotionSegment} newly added segment
 	 */
-	SegmentStash.prototype.InsertAt = function(segment) {
-		// body...
+	this.Insert = function(segment) {
+		var index=this.GetSegmentIndex(segment);
+
+		if(index <0)
+			return null;
+
+		//insert segment into the array
+		segments.splice(index,0,segment);
+
+		var segLength=segment.finalTime-segment.initalTime;
+
+		this.UpdateSegmentsAfter(index+1,segLength);
+
+		return segment;
+
 	};
 
 	/**
-	 * Gets a segment specified by initial time. Null if 
-	 * @param {Number} initialTime segment initial time
-	 * @returns {MotionSegment} segment at the specified time, or null
+	 * Appends a segment to the end
+	 * @param {MotionSegment} segment segment to append
 	 */
-	SegmentStash.prototype.SegmentAt=function(initialTime){
-		//quick check existing
-		var existing=this.Segments[initialTime];
+	this.Append = function(segment){
 
-		var numSegments=this.SegmentKeys.length;
+		segments.push(segment);
 
-		//may be past the profile
-		if(initialTime > this.SegmentKeys[numSegments-1])
-			return null;
+	};
 
-		//due to roundoff error, initial time may not match exactly, so check the long way
-		if(!angular.isObject(existing))
-		{
-			var index=this.GetSegmentIndex(initialTime);
 
-			if(index>=0)
-				return this.Segments[this.SegmentKeys[index]];
+	/**
+	 * After inserting or deleting a segment, all subsequent segments must be updated
+	 * @param {Number} startingIndex Where to start updating
+	 * @param {Number} offset        positive or negative number of seconds to update subsequent indeces
+	 */
+	this.UpdateSegmentsAfter = function(startingIndex,offset) {
+		
 
-			return null;
-
+		//update segment times for segments after
+		for (var i = startingIndex; i < segments.length; i++) {
+			segments[i].initialTime+=offset;
+			segments[i].finalTime+=offset;
 		}
 
-		return existing;
+
+	};
+
+
+	/**
+	 * Checks and returns if exists an existing segment beginning at time initialTime
+	 * @param {number} initialTime initial time of segment to check
+	 * @returns {MotionSegment} existing segment or null if none found
+	 */
+	this.GetSegmentAt = function(initialTime) {
+		var index = this.GetSegmentIndex(initialTime);
+		if(index<0)
+			return null;
+
+		return segments[index];
+
+	};
+
+
+	/**
+	 * Gets segment index given initial time. This function is necessary, 
+	 * as segment keys may not be exact match due to rounding errors
+	 * @param {Number} initialTime segment identifier
+	 */
+	this.GetSegmentIndex=function(initialTime){
+		//quick check existing
+		var exact = FastMath.binaryIndexOf.call(segments, initialTime);
+		if (exact >= 0)
+			return exact;
+
+		//need to check when segment times are subject to rounding errors
+
+		var idx = ~exact;
+		if (FastMath.equal(segments[idx], initialTime))
+			return idx;
+
+		if (idx > 0 && FastMath.equal(segments[idx - 1], initialTime))
+			return idx - 1;
+		if (idx < segments.length - 1 && FastMath.equal(segments[idx + 1]))
+			return idx + 1;
+
+		return -1;
 	};
 
 	/**
 	 * Deletes a segment and "stitches the hole ""
 	 * @param {Number} initialTime segment identifier
+	 * @returns {MotionSegment} The deleted segment or null if initialTime not valid
 	 */
-	SegmentStash.prototype.DeleteAt = function(initialTime){
+	this.DeleteAt = function(initialTime){
+		var index = this.GetSegmentIndex(initialTime);
 
-	}
+		var removed = segments.splice(index,1);
+
+	};
 
 	/**
 	 * Get all segments currently in the stash
 	 * @returns {Array} returns array of all segments
 	 */
-	SegmentStash.prototype.GetAllSegments = function() {
-		return this.segments;
+	this.GetAllSegments = function() {
+		return segments;
 	};
 
 }]);

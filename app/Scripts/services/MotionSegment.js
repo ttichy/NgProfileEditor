@@ -28,6 +28,17 @@ app.factory('MotionSegment', ['polynomialFactory', 'FastMath', function(polynomi
 
 	};
 
+
+	/**
+	 * Primitive value of the BasicMotionSegment object
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf
+	 * @return {number} initial time of the segment
+	 */
+	MotionSegment.prototype.valueOf = function() {
+		return this.initialTime;
+	};
+
+
 	MotionSegment.prototype.GetAllSegments = function() {
 		return this.segments;
 	};

@@ -32,7 +32,7 @@ describe('Unit: motionProfileFactory testing', function() {
     });
 
 
-    it('should add 2 accel segments to the profile and have 6 basic segments total', function() {
+    xit('should add 2 accel segments to the profile and have 6 basic segments total', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
@@ -72,7 +72,7 @@ describe('Unit: motionProfileFactory testing', function() {
     });
 
 
-    it('should correctly place an accel segment within another accel segment, slicing the existing segment correctly', function() {
+    xit('should correctly place an accel segment within another accel segment, slicing the existing segment correctly', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
@@ -184,41 +184,31 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
-        profile.PutSegment(accelSegment);
+        profile.AppendSegment(accelSegment);
 
 
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(0, 1, 0, 0, 7.5, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromVelocity(2, 3, 0, 0, 7.5, 0.5);
 
-        profile.PutSegment(accelSegment);
+        profile.AppendSegment(accelSegment);
 
         profile.DeleteSegment(accelSegment);
 
-        var segments = profile.GetAllBasicSegments();
+        var segments = profile.GetAllSegments();
 
-        expect(segments.length).toBe(3);
+        expect(segments.length).toBe(1);
 
 
         var seg0 = segments[0];
         expect(seg0.initialTime).toBe(0);
-        expect(seg0.finalTime).toBe(0.5);
+        expect(seg0.finalTime).toBe(2);
         expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777, 4);
 
-        var seg1 = segments[1];
-        expect(seg1.initialTime).toBe(0.5);
-        expect(seg1.finalTime).toBe(1.5);
-        expect(seg1.EvaluatePositionAt(1.5)).toBeCloseTo(5.277777, 4);
-
-        var seg2 = segments[2];
-        expect(seg2.initialTime).toBe(1.5);
-        expect(seg2.finalTime).toBe(2);
-        expect(seg2.EvaluatePositionAt(2)).toBe(10);
-        expect(seg2.EvaluateVelocityAt(2)).toBe(10);
 
     });
 
 
-    it('should correctly delete an accel segment that IS the last segment', function() {
+    xit('should correctly delete an accel segment that IS the last segment', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
@@ -262,11 +252,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
-        profile.PutSegment(accelSegment1);
+        profile.AppendSegment(accelSegment1);
 
         var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
 
-        profile.PutSegment(accelSegment2);
+        profile.AppendSegment(accelSegment2);
 
         var existing = profile.GetExistingSegment(0);
         expect(existing.initialTime).toBe(0);
@@ -283,11 +273,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
-        profile.PutSegment(accelSegment1);
+        profile.AppendSegment(accelSegment1);
 
         var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
 
-        profile.PutSegment(accelSegment2);
+        profile.AppendSegment(accelSegment2);
 
         var existing = profile.GetExistingSegment(1);
         expect(existing).toBe(null);
@@ -304,11 +294,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
-        profile.PutSegment(accelSegment1);
+        profile.AppendSegment(accelSegment1);
 
         var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
 
-        profile.PutSegment(accelSegment2);
+        profile.AppendSegment(accelSegment2);
 
         var existing = profile.GetExistingSegment(0-fastMath.epsilon/2);
         expect(existing).not.toBe(null);

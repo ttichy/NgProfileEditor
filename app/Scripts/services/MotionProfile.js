@@ -11,15 +11,14 @@
 var app=angular.module('profileEditor');
 
 
-app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','FastMath','ProfileHelper',
- function(basicSegmentFactory, accelSegmentFactory, fastMath, profileHelper) {
+app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath','ProfileHelper',
+ function(MotionSegment, SegmentStash, fastMath, profileHelper) {
 
 	var factory = {};
 
 	factory.CreateMotionProfile=function(type){
 		return new MotionProfile(type);
 	};
-
 
 	/*
 	MOTION PROFILE OBJECT LOGIC
@@ -32,30 +31,21 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 		if (type === "linear")
 			this.ProfileType = "linear";
 
-		this.Segments = {}; //associative array for all segments. Key is initial time
-
-		this.SegmentKeys=[]; // keep a handy copy of all keys for Segments. Always sorted.
-
-
-
-
-
+		//stash to hold segments
+		 this.stash = SegmentStash;
 	};
 
 
+
 	/**
-	 * Gets all basic segments that exist in the profile
+	 * Gets all basic segments that exist in the profile. Basic Segments are the most basic building blocks
 	 */
 	MotionProfile.prototype.GetAllBasicSegments = function() {
-		
-		// using associative array to hold all segments -> quick and easy to search
 		var allSegments=[];
-
-		for(var key in this.Segments) {
-			if(!this.Segments.hasOwnProperty(key))
-				continue;
-			allSegments.push(this.Segments[key].AllSegments());
-		}
+		// using associative array to hold all segments -> quick and easy to search
+		this.stash.GetAllSegments().forEach(function(element){
+			allSegments.push(element.GetAllBasicSegments());
+		});
 
 		// previous code gets us an array of arrays, we need to flatten it
 		return allSegments.reduce(function(a, b) {
@@ -63,29 +53,9 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
   		});
 	};
 
-	/**
-	 * Gets segment index given initial time. This function is necessary, 
-	 * as segment keys may not be exact match due to rounding errors
-	 * @param {[type]} segment [description]
-	 */
-	MotionProfile.prototype.GetSegmentIndex = function(initialTime) {
-		var exact = fastMath.binaryIndexOf.call(this.SegmentKeys, initialTime);
-		if (exact >= 0)
-			return exact;
-
-		var idx = ~exact;
-		if (fastMath.equal(this.SegmentKeys[idx], initialTime))
-			return idx;
-
-		if (idx > 0 && fastMath.equal(this.SegmentKeys[idx - 1], initialTime))
-			return idx - 1;
-		if (idx < this.SegmentKeys.length - 1 && fastMath.equal(this.SegmentKeys[idx + 1]))
-			return idx + 1;
-
-		return -1;
-
+	MotionProfile.prototype.GetAllSegments = function() {
+		return this.stash.GetAllSegments();
 	};
-
 
 
 	/**
@@ -95,32 +65,7 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 	 */
 	MotionProfile.prototype.GetExistingSegment = function(initialTime){
 
-		//quick check existing
-		var existing=this.Segments[initialTime];
-
-		var numSegments=this.SegmentKeys.length;
-
-		//may be past the profile
-		if(initialTime > this.SegmentKeys[numSegments-1])
-			return null;
-
-		//due to roundoff error, initial time may not match exactly, so check the long way
-		if(!angular.isObject(existing))
-		{
-			var index=this.GetSegmentIndex(initialTime);
-
-			if(index>=0)
-				return this.Segments[this.SegmentKeys[index]];
-
-			return null;
-
-		}
-
-		return existing;
-
-		
-
-
+		return this.stash.GetSegmentAt(initialTime);
 	};
 
 	/**
@@ -129,23 +74,17 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 	 */
 	MotionProfile.prototype.InsertSegment=function(segment) {
 		
-		//inserting a segment means that it is put in place of an existing segment
-		var existing=this.GetExistingSegment(segment.initialTime);
-		if(!angular.isObject(existing))
-			throw new Error('Cannot find a segment at time '+segment.initialTime+ ' where new segment should be inserted');
+		if(!(segment instanceof MotionSegment.MotionSegment))
+			throw new Error('Attempting to insert an object which is not a MotionSegment');
 
-		var segTime = segment.finalTime-segment.initialTime;
-		if(fastMath.leq(segTime,0))
-			throw new Error('Invalid segment times when inserting a segment');
-
-
-		//insert segment
-
-		//change times for all the other ones
-
-
-
+		this.stash.Insert(segment);
 	};
+
+
+	MotionProfile.prototype.AppendSegment = function(segment) {
+		this.stash.Append(segment);
+	};
+
 
 	/**
 	 * Puts segment into the profile ? WHAT DOES THIS DO??
@@ -206,56 +145,10 @@ app.factory('motionProfileFactory', ['basicSegmentFactory', 'AccelSegment','Fast
 	 */
 	MotionProfile.prototype.DeleteSegment = function(segment) {
 
-		var existing=this.Segments[segment.initialTime];
+		if(!(segment instanceof MotionSegment.MotionSegment))
+			throw new Error('Cannot delete segement, because it is not MotionSegment');
 
-		if(!angular.isObject(existing))
-			return;
-
-		// need to find the previous and next segments
-		var segmentPos=this.SegmentKeys.indexOf(segment.initialTime);
-		if(segmentPos<0)
-			throw new Error("Couldn't find segment in the SegmentKeys");
-
-		//check if this is the last segment
-		if (this.SegmentKeys[segmentPos] === this.SegmentKeys[this.SegmentKeys.length - 1]) {
-			// yes - last segment
-			delete this.Segments[segment.initialTime];
-			this.SegmentKeys.splice(segmentPos, 1);
-
-		} else {
-			// not last segment
-			// 
-			// we need to save the initial values of the segment that is about to be deleted
-			var t0 = segment.initialTime;
-			var p0 = segment.EvaluatePositionAt(segment.initialTime);
-			var v0 = segment.EvaluateVelocityAt(segment.initialTime);
-			var a0 = segment.EvaluateAccelerationAt(segment.initialTime);
-
-			// get the next segment
-			var nextSegmentKey=this.SegmentKeys[segmentPos+1];
-			var nextSegment=this.Segments[nextSegmentKey];
-
-			//save the final values
-			var pf=nextSegment.EvaluatePositionAt(nextSegment.finalTime);
-			var vf=nextSegment.EvaluateVelocityAt(nextSegment.finalTime);
-			var af=nextSegment.EvaluateAccelerationAt(nextSegment.finalTime);
-
-
-			var newSegment=nextSegment.ModifyInitialValues(t0,a0,v0,p0);
-
-			// delete the segment
-			delete this.Segments[nextSegment.initialTime];
-			this.SegmentKeys.splice(nextSegmentKey, 1);
-
-			this.Segments[t0]=newSegment;
-
-
-		}
-
-
-
-
-		
+		return this.stash.DeleteAt(segment.initialTime);
 
 	};
 
