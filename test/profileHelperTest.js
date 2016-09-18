@@ -1,5 +1,5 @@
 
-describe('Unit: profile helper functions-', function() {
+xdescribe('Unit: profile helper functions-', function() {
   "use strict";
   var polynomialFactory;
   var basicSegmentFactory;

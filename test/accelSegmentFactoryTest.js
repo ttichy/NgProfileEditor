@@ -1,5 +1,5 @@
 
-describe('Unit: accelSegmentFactory testing', function() {
+xdescribe('Unit: accelSegmentFactory testing', function() {
   "use strict";
 
   var accelSegmentFactory;
