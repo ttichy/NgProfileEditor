@@ -63,11 +63,31 @@ app.factory('LinkedList', [ function() {
 		if(prev)
 		{
 			prev.next=node;
-			node.prev=prev;
+			node.previous=prev;
 		}
 
 		this._length++;
 		return node;
+
+	};
+
+
+	LinkedList.prototype.removeNode = function(node) {
+		if(!(node instanceof Node))
+			throw new Error('removeNode: expecting a Node as parameter type');
+
+		var next=node.next;
+		var prev = node.previous;
+		
+		next.previous=prev;
+		prev.next=next;
+
+		var nodeToRemove=node;
+		node=null;
+
+		this._length--;
+
+		return nodeToRemove;
 
 	};
 
