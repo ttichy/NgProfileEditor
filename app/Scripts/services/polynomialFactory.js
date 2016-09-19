@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('polynomialFactory', ['FastMath',function(FastMath) {
+app.factory('Polynomial', ['FastMath',function(FastMath) {
 
     var factory ={};
 

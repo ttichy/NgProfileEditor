@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('MotionSegment', ['polynomialFactory', 'FastMath','SegmentStash', function(polynomialFactory, fastMath, SegmentStash) {
+app.factory('MotionSegment', ['FastMath','SegmentStash', function( fastMath, SegmentStash) {
 
 	/**
 	 * MotionSegment is a generic segment of which a motion profile consists of
@@ -11,10 +11,10 @@ app.factory('MotionSegment', ['polynomialFactory', 'FastMath','SegmentStash', fu
 	 */
 	var MotionSegment = function(t0,tf){
 		
-		if(!angular.isNumber(t0))
-			throw new Error('initial time t0 is not a number');
-		if(!angular.isNumber(tf))
-			throw new Error('final time tf is not a number');
+		if(!angular.isNumber(t0) || fastMath.lt(t0,0))
+			throw new Error('initial time t0 is not a valid time');
+		if(!angular.isNumber(tf) || fastMath.lt(tf,0))
+			throw new Error('final time tf is not a valid time');
 
 		var segTime=tf-t0;
 		if(fastMath.leq(segTime,0))
@@ -22,6 +22,8 @@ app.factory('MotionSegment', ['polynomialFactory', 'FastMath','SegmentStash', fu
 
 		this.initialTime=t0;
 		this.finalTime=tf;
+
+		this.id=this.GenerateId();
 
 		//each segment can hold other segments
 		this.segments=SegmentStash.MakeStash();
@@ -36,6 +38,20 @@ app.factory('MotionSegment', ['polynomialFactory', 'FastMath','SegmentStash', fu
 	 */
 	MotionSegment.prototype.valueOf = function() {
 		return this.initialTime;
+	};
+
+	/**
+	 * Generate unique id 
+	 */
+	MotionSegment.prototype.GenerateId = function() {
+
+		var mSec=(new Date()).getTime().toString();
+		var rnd = Math.floor(Math.random()*100).toString();
+
+		var idStr=mSec+rnd;
+
+		return parseInt(idStr,10);
+
 	};
 
 

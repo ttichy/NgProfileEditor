@@ -17,25 +17,78 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 
 	var SegmentStash=function() {
 
-		this.segmentsHash={};
-		this.segmentsList=LinkedList.MakeList();
+	/**
+	 * [nodesHash description]
+	 * @type {Object} associative array of nodes. Each node contains a motion segment
+	 */
+		this.nodesHash={};
+		
+		this.segmentsList=LinkedList.MakeLinkedList();
 
 	};
 
-	SegmentStash.prototype.InsertAt = function(segment,position) {
-	if(arguments.length!==2)
-		throw new Error("Insert expects 2 arguments: segment and position");
+	/**
+	 * Inserts a segment in front of another segment identified by segmentId
+	 * @param {MotionSegment} segment   Segment to insert
+	 * @param {integer} segmentId segment Id of segment to insert in front of. If null, add at the end
+	 */
+	SegmentStash.prototype.InsertAt = function(segment,segmentId) {
+		if (!segment)
+			throw new Error("Insert expects segment to be not null!");
 
-		if (!FastMath.isNumeric(position) || FastMath.lt(0))
-			throw new Error("Insert expects position to be a number >=0");
+		var newNode;
+
+		if (segmentId)
+		{ //there needs to be an existing node with this id
+			var existingNode = this.nodesHash[segmentId];
+			if (!existingNode)
+				return null;
+
+			newNode = this.segmentsList.insertAt(segment, existingNode);
+
+		}
+		else
+		{
+			newNode=this.segmeList.add(segment);
+		}
+		
+		this.nodesHash[segment.id] = newNode;	
+		return segment;
+
+
 
 	};
 
 
+	/**
+	 * Gets all segments currently in the stash
+	 * @returns {Array} array of MotionSegment
+	 */
+	SegmentStash.prototype.GetAllSegments = function() {
+		
+		return this.segmentsList.getDataArray();
 
-	SegmentStash.prototype.DeleteAt = function(position) {
-		if(!FastMath.isNumeric(position) || FastMath.lt(0))
-			throw new Error("Delete expects position to be a number >=0");
+	};
+
+
+	/**
+	 * Deletes segment specified by segment id
+	 * @param {Number} segmentId 
+	 */
+	SegmentStash.prototype.Delete = function(segmentId) {
+		if(!FastMath.isNumeric(segmentId) || FastMath.lt(0))
+			throw new Error("Delete expects id to be a number >=0");
+
+		var nodeToDel = this.nodesHash[segmentId];
+		if(! nodeToDel)
+			return null;
+
+		var deletedNode=nodeToDel;
+		delete this.nodesHash[segmentId];
+
+		return this.segmentsList.removeNode(nodeToDel);
+
+
 	};
 
 	var factory={};

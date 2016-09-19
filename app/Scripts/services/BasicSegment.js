@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMath',function(polynomialFactory,MotionSegment,FastMath) {
+app.factory('basicSegmentFactory', ['Polynomial','MotionSegment','FastMath',function(polynomialFactory,MotionSegment,FastMath) {
 
 	var BasicMotionSegment = function(t0,tf, positionPolyCoeffs) {
 

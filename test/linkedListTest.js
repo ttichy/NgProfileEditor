@@ -140,6 +140,48 @@ describe('Unit: linked list functions-', function() {
   });
 
 
+  it("Should get data of length 3 from list of length 3", function(){
+    var list = linkedList.MakeLinkedList();
+
+    var data1 = {
+      "data1": 1
+    };
+    var data2 = {
+      "data2": 2
+    };
+
+    var data3 = {
+      "data3": 13
+    };    
+
+
+    list.add(data1);
+    list.add(data2);
+    list.add(data3);
+
+    var datas=list.getDataArray();
+
+    expect(datas[0]).toBe(data1);
+    expect(datas[1]).toBe(data2);
+    expect(datas[2]).toBe(data3);
+
+    expect(datas.length).toBe(3);
+
+
+  });
+
+
+  it("getDataArray method should get empty array from empty list",function(){
+
+    var list=linkedList.MakeLinkedList();
+
+    var datas=list.getDataArray();
+
+    expect(datas.length).toBe(0);
+
+  });
+
+
 
 });
   

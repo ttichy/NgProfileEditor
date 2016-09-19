@@ -72,6 +72,11 @@ app.factory('LinkedList', [ function() {
 	};
 
 
+	/**
+	 * Removes nodes specified by the parameter
+	 * @param  {Node} node Node to remove
+	 * @return {Node}      removed node
+	 */
 	LinkedList.prototype.removeNode = function(node) {
 		if(!(node instanceof Node))
 			throw new Error('removeNode: expecting a Node as parameter type');
@@ -92,9 +97,52 @@ app.factory('LinkedList', [ function() {
 	};
 
 
+	/**
+	 * Returns current length of the linked list
+	 */
 	LinkedList.prototype.Length = function() {
 		return this._length;
 	};
+
+
+	/**
+	 * Gets all nodes currently in the list
+	 * @returns {Array} array of all nodes in the list
+	 */
+	LinkedList.prototype.getAllNodes = function() {
+		var result=[];
+
+		var currentNode=this.head;
+
+		while(currentNode){
+			result.push(currentNode);
+			currentNode=currentNode.next;
+		}
+
+
+		return result;
+	};
+
+
+
+	/**
+	 * Gathers data from all nodes into an array
+	 * @returns {Array} array of all nodes in the list
+	 */
+	LinkedList.prototype.getDataArray = function() {
+		var result=[];
+
+		var currentNode=this.head;
+
+		while(currentNode){
+			result.push(currentNode.data);
+			currentNode=currentNode.next;
+		}
+
+
+		return result;
+	};
+
 
 
 	/**
@@ -201,6 +249,10 @@ app.factory('LinkedList', [ function() {
 
 
 	var factory = {};
+
+	/**
+	 * Creates a new linked list
+	 */
 	factory.MakeLinkedList = function() {
 		return new LinkedList();
 	};
