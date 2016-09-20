@@ -130,7 +130,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		//which segment does x fall in
 		
 		var segment = this.FindSegmentAtTime(x);
-		return segment.EvaluatePositionAt(x);
+		return segment.evaluatePositionAt(x);
 		
 	};
 
@@ -138,19 +138,19 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		//which segment does x fall in
 		
 		var segment = this.FindSegmentAtTime(x);
-		return segment.EvaluateVelocityAt(x);
+		return segment.evaluateVelocityAt(x);
 	};
 
 	AccelMotionSegment.prototype.EvaluateAccelerationAt = function(x) {
 		//which segment does x fall in
 		
 		var segment = this.FindSegmentAtTime(x);
-		return segment.EvaluateAccelerationAt(x);
+		return segment.evaluateAccelerationAt(x);
 	};
 
 
 	AccelMotionSegment.prototype.FindSegmentAtTime = function(time){
-		var segment = this.segments.GetAllSegments().filter(function(bSeg){
+		var segment = this.segments.getAllSegments().filter(function(bSeg){
 			return fastMath.geq(time,bSeg.initialTime) && fastMath.leq(time,bSeg.finalTime);
 		});
 		

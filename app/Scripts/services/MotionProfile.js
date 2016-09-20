@@ -31,11 +31,13 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		if (type === "linear")
 			this.ProfileType = "linear";
 
-		//stash to hold segments
-		 this.stash = SegmentStash.makeStash();
+		MotionSegment.MotionSegment.call(this);
 	};
 
 
+
+	MotionProfile.prototype = Object.create(MotionSegment.MotionSegment.prototype);
+	MotionProfile.prototype.constructor = MotionProfile;
 
 	/**
 	 * Gets all basic segments that exist in the profile. Basic Segments are the most basic building blocks
@@ -43,7 +45,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	MotionProfile.prototype.GetAllBasicSegments = function() {
 		var allSegments=[];
 		// using associative array to hold all segments -> quick and easy to search
-		this.stash.GetAllSegments().forEach(function(element){
+		this.segments.GetAllSegments().forEach(function(element){
 			allSegments.push(element.GetAllSegments());
 		});
 
@@ -54,7 +56,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	};
 
 	MotionProfile.prototype.GetAllSegments = function() {
-		return this.stash.GetAllSegments();
+		return this.segments.getAllSegments();
 	};
 
 
@@ -65,7 +67,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	 */
 	MotionProfile.prototype.GetExistingSegment = function(initialTime){
 
-		return this.stash.GetSegmentAt(initialTime);
+		return this.segments.findSegmentWithInitialTime(initialTime);
 	};
 
 	/**
@@ -77,12 +79,12 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		if(!(segment instanceof MotionSegment.MotionSegment))
 			throw new Error('Attempting to insert an object which is not a MotionSegment');
 
-		this.stash.Insert(segment);
+		this.segments.Insert(segment);
 	};
 
 
-	MotionProfile.prototype.AppendSegment = function(segment) {
-		this.stash.Append(segment);
+	MotionProfile.prototype.appendSegment = function(segment) {
+		this.segments.insertAt(segment,null);
 	};
 
 
@@ -141,14 +143,15 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	/**
 	 * Deletes specified segment. Suppose we have segments 1, 2 and 3 and want to delete 2.
 	 * 	First, we delete segment 2. Then, we modify the initial values of segment 3 to be the final values of segment 1
-	 * @param {MotionSegment} segment segment to delete
+	 * @param {MotionSegment} segmentId identify segment to delete
 	 */
-	MotionProfile.prototype.DeleteSegment = function(segment) {
+	MotionProfile.prototype.DeleteSegment = function(segmentId) {
 
-		if(!(segment instanceof MotionSegment.MotionSegment))
-			throw new Error('Cannot delete segement, because it is not MotionSegment');
+		if(!fastMath.isNumeric(segmentId) || fastMath.lt(segmentId,0))
+			throw new Error('expect segmentId to be a positive integer');
 
-		return this.stash.DeleteAt(segment.initialTime);
+
+		return this.segments.delete(segmentId);
 
 	};
 

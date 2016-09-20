@@ -151,7 +151,7 @@ describe('Unit: linked list functions-', function() {
     };
 
     var data3 = {
-      "data3": 13
+      "data3": 3
     };    
 
 

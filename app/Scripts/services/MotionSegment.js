@@ -40,6 +40,8 @@ app.factory('MotionSegment', ['FastMath','SegmentStash', function( fastMath, Seg
 	};
 
 
+
+
 	MotionSegment.prototype.initializeWithSegments = function(segments) {
 		
 		if(! Array.isArray(segments))

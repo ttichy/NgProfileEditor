@@ -176,6 +176,34 @@ var epsilon = 2.220446049250313e-16;
 				}
 
 				return ~maxIndex;
+			},
+			 binaryIndexOfObject: function(searchElement,accessor) {
+
+				var minIndex = 0;
+				var maxIndex = this.length - 1;
+				var currentIndex;
+				var currentElement;
+				var resultIndex;
+
+				while (minIndex <= maxIndex) {
+					resultIndex = currentIndex = (minIndex + maxIndex) / 2 | 0;
+					currentElement = this[currentIndex];
+
+					var current=accessor.call(currentElement);
+					var search=searchElement;
+
+					if (current < search) {
+						minIndex = currentIndex + 1;
+					}
+					else if (current > search) {
+						maxIndex = currentIndex - 1;
+					}
+					else {
+						return currentIndex;
+					}
+				}
+
+				return ~maxIndex;
 			}
 
 

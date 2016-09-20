@@ -92,6 +92,28 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 	};
 
 
+	SegmentStash.prototype.findSegmentWithInitialTime = function(initialTime) {
+
+
+		var currentNode = this.segmentsList.head;
+
+
+		// 2nd use-case: a valid position
+		while (currentNode) {
+
+			
+			if(FastMath.equal(initialTime,currentNode.data.initialTime))
+				return currentNode.data;
+
+			currentNode = currentNode.next;
+		}
+
+
+		return null;
+
+	};
+
+
 	SegmentStash.prototype.initializeWithSegments = function(segments) {
 		if(!Array.isArray(segments))
 			throw new Error("expecting an array of MotionSegments");

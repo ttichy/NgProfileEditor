@@ -1,4 +1,4 @@
-xdescribe('Unit: motionProfileFactory testing', function() {
+describe('Unit: motionProfileFactory testing', function() {
     "use strict";
 
     var motionProfileFactory;
@@ -188,15 +188,15 @@ xdescribe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
-        profile.AppendSegment(accelSegment);
+        profile.appendSegment(accelSegment);
 
 
 
         accelSegment = accelSegmentFactory.MakeFromVelocity(2, 3, 0, 0, 7.5, 0.5);
 
-        profile.AppendSegment(accelSegment);
+        profile.appendSegment(accelSegment);
 
-        profile.DeleteSegment(accelSegment);
+        profile.DeleteSegment(accelSegment.id);
 
         var segments = profile.GetAllSegments();
 
@@ -256,11 +256,11 @@ xdescribe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
 
-        profile.AppendSegment(accelSegment1);
+        profile.appendSegment(accelSegment1);
 
         var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
 
-        profile.AppendSegment(accelSegment2);
+        profile.appendSegment(accelSegment2);
 
         var existing = profile.GetExistingSegment(0);
         expect(existing.initialTime).toBe(0);

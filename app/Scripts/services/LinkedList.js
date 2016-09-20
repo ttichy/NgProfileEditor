@@ -84,7 +84,9 @@ app.factory('LinkedList', [ function() {
 		var next=node.next;
 		var prev = node.previous;
 		
-		next.previous=prev;
+		//this could be the last node
+		if(next)
+			next.previous=prev;
 		prev.next=next;
 
 		var nodeToRemove=node;
