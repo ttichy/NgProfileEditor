@@ -19,14 +19,7 @@ it("each segment should have a unique id",function(){
 });
 
 
-it("creating a motion segment with invalid initial or final time should throw",function(){
 
-	expect(function() {new MotionSegment.MotionSegment(0,0);}).toThrow();
-
-	expect(function() {new MotionSegment.MotionSegment(-1,0);}).toThrow();
-	expect(function() {new MotionSegment.MotionSegment(-2-1);}).toThrow();
-
-});
 
 
 

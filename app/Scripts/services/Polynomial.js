@@ -2,7 +2,7 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('Polynomial', ['FastMath',function(FastMath) {
+app.factory('polynomialFactory', ['FastMath',function(FastMath) {
 
     var factory ={};
 
@@ -75,7 +75,7 @@ app.factory('Polynomial', ['FastMath',function(FastMath) {
      * @param {double} startPoint where on x-axis does this poly start
      * @param {double} endPoint where on a x-axis does this poly end
      */
-    factory.CreatePolyAbCd =  function(coeffs,startPoint,endPoint){
+    factory.createPolyAbCd =  function(coeffs,startPoint,endPoint){
         if(!Array.isArray(coeffs) || coeffs.length!=4)
             throw new Error('expecting parameter of type array and length 4');
 
@@ -104,7 +104,7 @@ app.factory('Polynomial', ['FastMath',function(FastMath) {
         };
 
 
-        Polynomial.prototype.EvaluateAt = function(x) {
+        Polynomial.prototype.evaluateAt = function(x) {
             if(FastMath.lt(x ,this.startPoint))
                 throw new Error('Trying to evalute polynomial with x value less than the start point');
             if(FastMath.gt(x,this.endPoint))
@@ -117,7 +117,7 @@ app.factory('Polynomial', ['FastMath',function(FastMath) {
          * Takes derivative of this polynomial and returns a new polynomial
          * @returns {Polynomial} a new polynomial
          */
-        Polynomial.prototype.Derivative = function() {
+        Polynomial.prototype.derivative = function() {
             var b = 3*this.A;
             var c = 2*this.B;
             var d = this.C;
@@ -128,7 +128,7 @@ app.factory('Polynomial', ['FastMath',function(FastMath) {
         /**
          * Calculate cubic roots - props to http://stackoverflow.com/a/27176424/1579778
          */
-        Polynomial.prototype.Roots = function() {
+        Polynomial.prototype.roots = function() {
 
             var that=this;
             var roots=calculateCubicRoots(this.A,this.B,this.C,this.D);

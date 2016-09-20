@@ -2,34 +2,80 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('basicSegmentFactory', ['Polynomial','MotionSegment','FastMath',function(polynomialFactory,MotionSegment,FastMath) {
+app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMath',function(polyFactory,MotionSegment,FastMath) {
 
-	var BasicMotionSegment = function(t0,tf, positionPolyCoeffs) {
+	var BasicMotionSegment = function(duration, accel, jerk) {
+		if (!FastMath.areNumeric(duration, accel, jerk))
+			throw new Error("setInitialValues: expects all arguments to be numeric");
+		if (FastMath.lt(duration, 0))
+			throw new Error("Duration must be positive");
+		if (FastMath.gt(accel, 0) && FastMath.gt(jerk, 0))
+			throw new Error("BasicMotionSegment definition can't have both acceleration and jerk. Pick one!");
+		if (FastMath.equal(accel, 0) && FastMath.equal(jerk, 0))
+			throw new Error("BasicMotionSegment definition requires either acceleration or jerk, but not both");
 
-		MotionSegment.MotionSegment.call(this,t0,tf);
+		this.duration = duration;
+		this.j = jerk;
 
-		var poly = new polynomialFactory.CreatePolyAbCd(positionPolyCoeffs,t0,tf);
+		if (FastMath.gt(accel, 0)) {
+			this.a0 = accel;
+			this.hasJerk=false;
+		}
+		else
+			this.a0 = null;
+	
+
+		this.x0 = null;
+		this.v0 = null;
+		this.t0 = null;
 
 
-		this.positionPoly = poly;
+		this.initialized = false;
 
-		this.velocityPoly=this.positionPoly.Derivative();
-		this.accelPoly = this.velocityPoly.Derivative();
-		this.jerkPoly = this.accelPoly.Derivative();
+		//won't be using the stash, there is only one BasicSegment inside a BasicSegment
+		this.segments = null;
 
-		
-		//wait until polynomials are assigned, then calculate initial and final vel/pos
-		this.initialVelocity = this.EvaluateVelocityAt(t0);
-		this.finalVelocity = this.EvaluateVelocityAt(tf);
-
-		this.initialPosition = this.EvaluatePositionAt(t0);
-		this.finalPosition=this.EvaluatePositionAt(tf);
 
 
 	};
 
 	BasicMotionSegment.prototype = Object.create(MotionSegment.MotionSegment.prototype);
 	BasicMotionSegment.prototype.constructor = BasicMotionSegment;
+
+
+	/**
+	 * Sets the initial values for this basic segment
+	 * @param {number} t0 initial time		
+	 * @param {number} x0 initial position
+	 * @param {number} v0 initial velocity
+	 * @param {number} a0 initial acceleration
+	 */
+	BasicMotionSegment.prototype.setInitialValues = function(t0,x0,v0,a0) {
+		if(!FastMath.areNumeric(t0,x0,v0))
+			throw new Error("setInitialValues: expects t0,x0,v0 arguments to be numeric")	;
+
+		this.t0=t0;
+		this.x0=x0;
+		this.v0=v0;
+		
+		//set initial accel only if this BasicSegment has jerk
+		if(this.hasJerk)
+			this.a0=a0;
+
+
+		//since we have initial values, we can setup the polynomials
+		//Ax^3 + Bx^2 + Cx +D
+		var poly=polyFactory.CreatePolyAbcd([this.x0, this.v0, this.a0, this.j]);
+
+        this.positionPoly = poly;
+        this.velocityPoly=this.positionPoly.Derivative();
+        this.accelPoly = this.velocityPoly.Derivative();
+
+
+
+		this.initialized=true;
+
+	};
 
 
 	BasicMotionSegment.prototype.EvaluatePositionAt = function(x) {

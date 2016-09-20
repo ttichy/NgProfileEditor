@@ -32,7 +32,7 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 	 * @param {MotionSegment} segment   Segment to insert
 	 * @param {integer} segmentId segment Id of segment to insert in front of. If null, add at the end
 	 */
-	SegmentStash.prototype.InsertAt = function(segment,segmentId) {
+	SegmentStash.prototype.insertAt = function(segment,segmentId) {
 		if (!segment)
 			throw new Error("Insert expects segment to be not null!");
 
@@ -49,7 +49,7 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 		}
 		else
 		{
-			newNode=this.segmeList.add(segment);
+			newNode=this.segmentsList.add(segment);
 		}
 		
 		this.nodesHash[segment.id] = newNode;	
@@ -64,7 +64,7 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 	 * Gets all segments currently in the stash
 	 * @returns {Array} array of MotionSegment
 	 */
-	SegmentStash.prototype.GetAllSegments = function() {
+	SegmentStash.prototype.getAllSegments = function() {
 		
 		return this.segmentsList.getDataArray();
 
@@ -75,7 +75,7 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 	 * Deletes segment specified by segment id
 	 * @param {Number} segmentId 
 	 */
-	SegmentStash.prototype.Delete = function(segmentId) {
+	SegmentStash.prototype.delete = function(segmentId) {
 		if(!FastMath.isNumeric(segmentId) || FastMath.lt(0))
 			throw new Error("Delete expects id to be a number >=0");
 
@@ -93,7 +93,7 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 
 	var factory={};
 
-	factory.MakeStash=function(){
+	factory.makeStash=function(){
 		return new SegmentStash();
 	};
 

@@ -108,18 +108,15 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		var t0=basicSegments[0].initialTime;
 		var tf=basicSegments[basicSegments.length-1].finalTime;
 
-		MotionSegment.MotionSegment.call(this,t0,tf);
+		MotionSegment.MotionSegment.call(this);
 
 		//TODO: check ordering of the basicSegments (increasing time)
 
 		this.type='acceleration';
 
 
-		// each segment (regardless of type) has initialTime and finalTime
-		this.initialTime=basicSegments[0].initialTime;
-		this.finalTime=basicSegments[basicSegments.length-1].finalTime;
 
-		this.segments.InitializeWithSegments(basicSegments);
+		this.segments.initializeWithSegments(basicSegments);
 	};
 
 
