@@ -1,4 +1,4 @@
-describe('Unit: motionProfileFactory testing', function() {
+xdescribe('Unit: motionProfileFactory testing', function() {
     "use strict";
 
     var motionProfileFactory;

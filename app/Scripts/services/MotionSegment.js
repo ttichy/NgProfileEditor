@@ -2,45 +2,59 @@
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('MotionSegment', ['polynomialFactory', 'FastMath','SegmentStash', function(polynomialFactory, fastMath, SegmentStash) {
+app.factory('MotionSegment', ['FastMath','SegmentStash', function( fastMath, SegmentStash) {
 
 	/**
-	 * MotionSegment is a generic segment of which a motion profile consists of
+	 * MotionSegment is a collection of other MotionSegments. MotionSegment(s) form the entire MotionProfile
+	 * Initialize the segment with a unique id and a stash to hold other segments
 	 * @param {Number} t0 initial Time
 	 * @param {Number} tf final Time
 	 */
 	var MotionSegment = function(t0,tf){
 		
-		if(!angular.isNumber(t0))
-			throw new Error('initial time t0 is not a number');
-		if(!angular.isNumber(tf))
-			throw new Error('final time tf is not a number');
-
-		var segTime=tf-t0;
-		if(fastMath.leq(segTime,0))
-			throw new Error('MotionSegment time duration is less or equal to zero');
 
 		this.initialTime=t0;
 		this.finalTime=tf;
 
+		this.id=this.generateId();
+
 		//each segment can hold other segments
-		this.segments=SegmentStash.MakeStash();
+		this.segments=SegmentStash.makeStash();
 
 	};
+
 
 
 	/**
-	 * Primitive value of the BasicMotionSegment object
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf
-	 * @return {number} initial time of the segment
+	 * Generate unique id 
 	 */
-	MotionSegment.prototype.valueOf = function() {
-		return this.initialTime;
+	MotionSegment.prototype.generateId = function() {
+
+		var mSec=(new Date()).getTime().toString();
+		var rnd = Math.floor(Math.random()*100).toString();
+
+		var idStr=mSec+rnd;
+
+		return parseInt(idStr,10);
+
 	};
 
 
-	MotionSegment.prototype.GetAllSegments = function() {
-		return this.segments.GetAllSegments();
+	MotionSegment.prototype.initializeWithSegments = function(segments) {
+		
+		if(! Array.isArray(segments))
+			throw new Error("Expecting array of segments. Was not an array");
+
+		//add each segment
+		for (var i = 0; i < segments.length; i++) {
+			this.segments.insertAt(segments[i],null);
+		}
+	};
+
+
+
+	MotionSegment.prototype.getAllSegments = function() {
+		return this.segments.getAllSegments();
 	};
 
 	var factory={};

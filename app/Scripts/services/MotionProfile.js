@@ -32,7 +32,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 			this.ProfileType = "linear";
 
 		//stash to hold segments
-		 this.stash = SegmentStash.MakeStash();
+		 this.stash = SegmentStash.makeStash();
 	};
 
 

@@ -1,147 +1,111 @@
 "use strict";
 /**
- * SegmentStash takes care of low level segment operations
- * A regular associative array could be used, but there are issues
- * with rounding
+ * SegmentStash is the backing data structure for low level segment operations.
+ * A motion profile is really a sorted array of MotionSegments. Some MotionSegments may contain other MotionSegments
+ *
+ * Also, in order to speed up search and insert/delete operation, two data structures are used:
+ * linked list - insert
+ * hashmap(array) - searching
+ * 
  */
 
 // get app reference
 var app=angular.module('profileEditor');
 
-app.factory('SegmentStash',['FastMath',  function(FastMath) {
+app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedList) {
+
 
 	var SegmentStash=function() {
 
-		this.segments=[];
+	/**
+	 * [nodesHash description]
+	 * @type {Object} associative array of nodes. Each node contains a motion segment
+	 */
+		this.nodesHash={};
+		
+		this.segmentsList=LinkedList.makeLinkedList();
 
 	};
 
-
 	/**
-	 * Initialize the stash with segments
-	 * @param {Array} segmentArr Array of segments to initalize with 
+	 * Inserts a segment in front of another segment identified by segmentId
+	 * @param {MotionSegment} segment   Segment to insert
+	 * @param {integer} segmentId segment Id of segment to insert in front of. If null, add at the end
 	 */
-	SegmentStash.prototype.InitializeWithSegments = function(segmentArr) {
-		if(!Array.isArray(segmentArr))
-			throw new Error('to initialize SegmentStash, pass in an array of segments');
-		this.segments=segmentArr;
-	};
+	SegmentStash.prototype.insertAt = function(segment,segmentId) {
+		if (!segment)
+			throw new Error("Insert expects segment to be not null!");
 
-	/**
-	 * Inserts a segment. The position is taken from segment.initialTime
-	 * @param {MotionSegment} segment segment to insert
-	 * @returns {MotionSegment} newly added segment
-	 */
-	SegmentStash.prototype.Insert = function(segment) {
-		var index=this.GetSegmentIndex(segment.initialTime);
+		var newNode;
 
-		if(index <0)
-			return null;
+		if (segmentId)
+		{ //there needs to be an existing node with this id
+			var existingNode = this.nodesHash[segmentId];
+			if (!existingNode)
+				return null;
 
-		//insert segment into the array
-		this.segments.splice(index,0,segment);
+			newNode = this.segmentsList.insertAt(segment, existingNode);
 
-		var segLength=segment.finalTime-segment.initialTime;
-
-		this.UpdateSegmentsAfter(index+1,segLength);
-
+		}
+		else
+		{
+			newNode=this.segmentsList.add(segment);
+		}
+		
+		this.nodesHash[segment.id] = newNode;	
 		return segment;
 
-	};
 
-	/**
-	 * Appends a segment to the end
-	 * @param {MotionSegment} segment segment to append
-	 */
-	SegmentStash.prototype.Append = function(segment){
-
-		this.segments.push(segment);
 
 	};
 
 
 	/**
-	 * After inserting or deleting a segment, all subsequent segments must be updated
-	 * @param {Number} startingIndex Where to start updating
-	 * @param {Number} offset        positive or negative number of seconds to update subsequent indeces
+	 * Gets all segments currently in the stash
+	 * @returns {Array} array of MotionSegment
 	 */
-	SegmentStash.prototype.UpdateSegmentsAfter = function(startingIndex,offset) {
+	SegmentStash.prototype.getAllSegments = function() {
 		
-
-		//update segment times for segments after
-		for (var i = startingIndex; i < this.segments.length; i++) {
-			this.segments[i].initialTime+=offset;
-			this.segments[i].finalTime+=offset;
-		}
-
+		return this.segmentsList.getDataArray();
 
 	};
 
 
 	/**
-	 * Checks and returns if exists an existing segment beginning at time initialTime
-	 * @param {number} initialTime initial time of segment to check
-	 * @returns {MotionSegment} existing segment or null if none found
+	 * Deletes segment specified by segment id
+	 * @param {Number} segmentId 
 	 */
-	SegmentStash.prototype.GetSegmentAt = function(initialTime) {
-		var index = this.GetSegmentIndex(initialTime);
-		if(index<0)
+	SegmentStash.prototype.delete = function(segmentId) {
+		if(!FastMath.isNumeric(segmentId) || FastMath.lt(0))
+			throw new Error("Delete expects id to be a number >=0");
+
+		var nodeToDel = this.nodesHash[segmentId];
+		if(! nodeToDel)
 			return null;
 
-		return this.segments[index];
+		var deletedNode=nodeToDel;
+		delete this.nodesHash[segmentId];
+
+		return this.segmentsList.removeNode(nodeToDel);
+
 
 	};
 
 
-	/**
-	 * Gets segment index given initial time. This function is necessary, 
-	 * as segment keys may not be exact match due to rounding errors
-	 * @param {Number} segment segment whose initial time is to be used to locate the index
-	 */
-	SegmentStash.prototype.GetSegmentIndex=function(segment){
-		//quick check existing
-		var exact = FastMath.binaryIndexOf.call(this.segments, segment);
-		if (exact >= 0)
-			return exact;
+	SegmentStash.prototype.initializeWithSegments = function(segments) {
+		if(!Array.isArray(segments))
+			throw new Error("expecting an array of MotionSegments");
 
-		//need to check when segment times are subject to rounding errors
+			for (var i = 0; i < segments.length; i++) {
+				this.insertAt(segments[i],null);
+		}
 
-		var idx = ~exact;
-		if (FastMath.equal(this.segments[idx], segment))
-			return idx;
-
-		if (idx > 0 && FastMath.equal(this.segments[idx - 1], segment))
-			return idx - 1;
-		if (idx < this.segments.length - 1 && FastMath.equal(this.segments[idx + 1]))
-			return idx + 1;
-
-		return -1;
-	};
-
-	/**
-	 * Deletes a segment and "stitches the hole ""
-	 * @param {Number} initialTime segment identifier
-	 * @returns {MotionSegment} The deleted segment or null if initialTime not valid
-	 */
-	SegmentStash.prototype.DeleteAt = function(initialTime){
-		var index = this.GetSegmentIndex(initialTime);
-
-		var removed = this.segments.splice(index,1);
-
-	};
-
-	/**
-	 * Get all segments currently in the stash
-	 * @returns {Array} returns array of all segments
-	 */
-	SegmentStash.prototype.GetAllSegments = function() {
-		return this.segments;
 	};
 
 
 	var factory={};
 
-	factory.MakeStash=function(){
+	factory.makeStash=function(){
 		return new SegmentStash();
 	};
 

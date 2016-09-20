@@ -52,7 +52,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 			basicSegment=basicSegmentFactory.CreateBasicSegment(t0,t0+th,coeffs1);
 	
-			coeffs2=[basicSegment.EvaluatePositionAt(t0+th),basicSegment.EvaluateVelocityAt(t0+th),aMax/2,-jerk/6];
+			coeffs2=[basicSegment.evaluatePositionAt(t0+th),basicSegment.evaluateVelocityAt(t0+th),aMax/2,-jerk/6];
 	
 			basicSegment2=basicSegmentFactory.CreateBasicSegment(t0+th,tf,coeffs2);
 	
@@ -76,10 +76,10 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		coeffs1=[jerk/6,0,v0,p0];
 		basicSegment = basicSegmentFactory.CreateBasicSegment(t0,t0+td1,coeffs1);
 
-		coeffs2=[0, aMax/2,basicSegment.EvaluateVelocityAt(t0+td1),basicSegment.EvaluatePositionAt(t0+td1)]; // middle segment has no jerk
+		coeffs2=[0, aMax/2,basicSegment.evaluateVelocityAt(t0+td1),basicSegment.evaluatePositionAt(t0+td1)]; // middle segment has no jerk
 		basicSegment2 = basicSegmentFactory.CreateBasicSegment(t0+td1,t0+td1+tdm,coeffs2);
 
-		coeffs3=[-jerk/6, aMax/2,basicSegment2.EvaluateVelocityAt(t0+td1+tdm), basicSegment2.EvaluatePositionAt(t0+td1+tdm)];
+		coeffs3=[-jerk/6, aMax/2,basicSegment2.evaluateVelocityAt(t0+td1+tdm), basicSegment2.evaluatePositionAt(t0+td1+tdm)];
 		basicSegment3 = basicSegmentFactory.CreateBasicSegment(t0+td1+tdm,tf,coeffs3);
 
 		accelSegment = new AccelMotionSegment([basicSegment, basicSegment2, basicSegment3]);
@@ -119,7 +119,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		this.initialTime=basicSegments[0].initialTime;
 		this.finalTime=basicSegments[basicSegments.length-1].finalTime;
 
-		this.segments.InitializeWithSegments(basicSegments);
+		this.segments.initializeWithSegments(basicSegments);
 	};
 
 
@@ -166,6 +166,10 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		return segment[0];
 	};
 
+
+	AccelMotionSegment.prototype.getAll = function() {
+		return this.segments.GetAllSegments();
+	};
 
 
 	/**

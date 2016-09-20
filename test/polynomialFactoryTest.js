@@ -29,8 +29,8 @@ describe('Unit: valid factory injection', function() {
   });
   
 
-  it('polynomialFactory should have CreatePolyAbCd function', function() {
-  	expect(angular.isFunction(polynomialFactory.CreatePolyAbCd)).toBe(true);
+  it('polynomialFactory should have createPolyAbCd function', function() {
+  	expect(angular.isFunction(polynomialFactory.createPolyAbCd)).toBe(true);
   });
 
 
@@ -67,11 +67,11 @@ describe('Unit: polynomial factory', function() {
   });
 
   it('should create polynomial starting at 0 and evaluate it correctly', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],0,20);
+    var poly = polynomialFactory.createPolyAbCd([1,2,3,4],0,20);
     
-    var result0=poly.EvaluateAt(0);
-    var result1=poly.EvaluateAt(1);
-    var result2=poly.EvaluateAt(2);
+    var result0=poly.evaluateAt(0);
+    var result1=poly.evaluateAt(1);
+    var result2=poly.evaluateAt(2);
 
     expect(result0).toBe(4);
     expect(result1).toBe(10);
@@ -81,11 +81,11 @@ describe('Unit: polynomial factory', function() {
 
 
   it('should create polynomial starting at 1 and evaluate it correctly', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1,20);
+    var poly = polynomialFactory.createPolyAbCd([1,2,3,4],1,20);
     
-    var result0=poly.EvaluateAt(1);
-    var result1=poly.EvaluateAt(2);
-    var result2=poly.EvaluateAt(3);
+    var result0=poly.evaluateAt(1);
+    var result1=poly.evaluateAt(2);
+    var result2=poly.evaluateAt(3);
 
     expect(result0).toBe(4);
     expect(result1).toBe(10);
@@ -95,28 +95,28 @@ describe('Unit: polynomial factory', function() {
 
 
   it('should create polynomial starting at 1 and throw error when evaluating at 0', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1,20);
+    var poly = polynomialFactory.createPolyAbCd([1,2,3,4],1,20);
 
-    expect(function() {poly.EvaluateAt(0);}).toThrow(new Error('Trying to evalute polynomial with x value less than the start point'));
+    expect(function() {poly.evaluateAt(0);}).toThrow(new Error('Trying to evalute polynomial with x value less than the start point'));
 
   });
 
 
   it('should create polynomial starting at 1 and calculate its derivate', function(){
-    var poly = polynomialFactory.CreatePolyAbCd([1,2,3,4],1,20);
+    var poly = polynomialFactory.createPolyAbCd([1,2,3,4],1,20);
 
-    var der = poly.Derivative();
+    var der = poly.derivative();
 
-    var derAt1 = der.EvaluateAt(1);
-    var derAt2 = der.EvaluateAt(2);
+    var derAt1 = der.evaluateAt(1);
+    var derAt2 = der.evaluateAt(2);
     
     expect(derAt1).toBe(3);
     expect(derAt2).toBe(10);
 
-    var der2 = der.Derivative();
+    var der2 = der.derivative();
 
-    var der2At1=der2.EvaluateAt(1);
-    var der2At3=der2.EvaluateAt(3);
+    var der2At1=der2.evaluateAt(1);
+    var der2At3=der2.evaluateAt(3);
 
     expect(der2At1).toBe(4);
     expect(der2At3).toBe(16);
@@ -126,9 +126,9 @@ describe('Unit: polynomial factory', function() {
 
   it('should calculate roots of cubic polynomial [1,-6,12,-8]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([1,-6,12,-8],0,20);
+    var poly=polynomialFactory.createPolyAbCd([1,-6,12,-8],0,20);
 
-    var roots = poly.Roots();
+    var roots = poly.roots();
 
     expect(angular.isArray(roots));
     expect(fm.equal(roots[0],2)).toBe(true);
@@ -138,9 +138,9 @@ describe('Unit: polynomial factory', function() {
 
   it('should calculate roots of cubic polynomial [1,6,12,8]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([1,6,12,8],0,20);
+    var poly=polynomialFactory.createPolyAbCd([1,6,12,8],0,20);
 
-    var roots = poly.Roots();
+    var roots = poly.roots();
 
     expect(angular.isArray(roots));
 
@@ -154,9 +154,9 @@ describe('Unit: polynomial factory', function() {
 
   it('should calculate roots of quadratic polynomial [0,1,0,-1]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,-1],0,20);
+    var poly=polynomialFactory.createPolyAbCd([0,1,0,-1],0,20);
 
-    var roots = poly.Roots();
+    var roots = poly.roots();
 
     expect(angular.isArray(roots));
     expect(fm.equal(roots[0],1)).toBe(true);
@@ -166,9 +166,9 @@ describe('Unit: polynomial factory', function() {
 
   it('should calculate roots of quadratic polynomial [0,1,0,1]', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([0,1,0,1],0,20);
+    var poly=polynomialFactory.createPolyAbCd([0,1,0,1],0,20);
 
-    var roots = poly.Roots();
+    var roots = poly.roots();
 
     expect(angular.isArray(roots));
     expect(roots.length).toBe(0);
@@ -178,9 +178,9 @@ describe('Unit: polynomial factory', function() {
 
   it('should calculate roots of quadratic polynomial [1,-3,-144,432] and its derivative', function(){
 
-    var poly=polynomialFactory.CreatePolyAbCd([1,-3,-144,432],0,20);
+    var poly=polynomialFactory.createPolyAbCd([1,-3,-144,432],0,20);
 
-    var roots = poly.Roots();
+    var roots = poly.roots();
 
     expect(angular.isArray(roots));
     expect(roots.length).toBe(2);
@@ -189,9 +189,9 @@ describe('Unit: polynomial factory', function() {
     expect(fm.equal(roots[0],3));
     expect(fm.equal(roots[0],12));
 
-    var derivative=poly.Derivative();
+    var derivative=poly.derivative();
     
-    roots=derivative.Roots();
+    roots=derivative.roots();
     expect(roots.length).toBe(1);
 
     //expect(fm.equal(roots[0],-6)); //-6 is not within start/end time
