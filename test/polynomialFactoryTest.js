@@ -35,14 +35,12 @@ describe('Unit: valid factory injection', function() {
 
 
   it('basicSegmentFactory should have CreateBasicSegment function', function() {
-  	expect(angular.isFunction(basicSegmentFactory.CreateBasicSegment)).toBe(true);
+  	expect(angular.isFunction(basicSegmentFactory.createBasicSegment)).toBe(true);
   }); 
 
 
 
-  it('accelSegmentFactory should have MakeFromVelocity function', function() {
-  	expect(angular.isFunction(accelSegmentFactory.MakeFromVelocity)).toBe(true);
-  });
+
 
 
 });

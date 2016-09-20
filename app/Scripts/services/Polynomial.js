@@ -1,18 +1,81 @@
 "use strict";
 // get app reference
-var app=angular.module('profileEditor');
+var app = angular.module('profileEditor');
 
-app.factory('polynomialFactory', ['FastMath',function(FastMath) {
+app.factory('polynomialFactory', ['FastMath', function(FastMath) {
 
-    var factory ={};
+    var factory = {};
 
-    var cuberoot=function cuberoot(x) {
-        var y = Math.pow(Math.abs(x), 1/3);
+
+    /**
+     * Polynomial of max 3rd degree
+     * @param {Array} coeffArray [description]
+     * @param {double} startPoint Point on the X-axis where to start evaluating
+     * @param {double} endPoint where on x-axis does the evaluation stop
+     */
+    var Polynomial = function(coeffArray, startPoint, endPoint) {
+
+        this.A = coeffArray[3];
+        this.B = coeffArray[2];
+        this.C = coeffArray[1];
+        this.D = coeffArray[0];
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+
+    };
+
+
+    Polynomial.prototype.evaluateAt = function(x) {
+        if (FastMath.lt(x, this.startPoint))
+            throw new Error('Trying to evalute polynomial with x value less than the start point');
+        if (FastMath.gt(x, this.endPoint))
+            throw new Error('Trying to evaluate polynomial with x value greater than the end point');
+        return this.A * Math.pow(x - this.startPoint, 3) + this.B * Math.pow(x - this.startPoint, 2) + this.C * (x - this.startPoint) + this.D;
+    };
+
+
+    /**
+     * Takes derivative of this polynomial and returns a new polynomial
+     * @returns {Polynomial} a new polynomial
+     */
+    Polynomial.prototype.derivative = function() {
+        var b = 3 * this.A;
+        var c = 2 * this.B;
+        var d = this.C;
+
+        return new Polynomial([d, c, b, 0], this.startPoint, this.endPoint);
+    };
+
+    /**
+     * Calculate cubic roots - props to http://stackoverflow.com/a/27176424/1579778
+     */
+    Polynomial.prototype.roots = function() {
+
+        var that = this;
+        var roots = calculateCubicRoots(this.A, this.B, this.C, this.D);
+        return roots.filter(function(value) {
+
+            if (FastMath.geq(value, that.startPoint) && FastMath.leq(value, that.endPoint))
+                return true;
+        });
+
+    };
+
+
+
+    Polynomial.prototype.toPrettyString = function() {
+        return this.this.A + '(x-' + this.startPoint + ')^3 + ' + this.B + '(x-' + this.startPoint + ')^2 + ' + this.C + '(x-' + this.startPoint + ')' + this.D;
+    };
+
+
+
+    var cuberoot = function cuberoot(x) {
+        var y = Math.pow(Math.abs(x), 1 / 3);
         return x < 0 ? -y : y;
     };
 
 
-    var calculateCubicRoots = function(a,b,c,d) {
+    var calculateCubicRoots = function(a, b, c, d) {
         var D;
         var u;
 
@@ -75,80 +138,19 @@ app.factory('polynomialFactory', ['FastMath',function(FastMath) {
      * @param {double} startPoint where on x-axis does this poly start
      * @param {double} endPoint where on a x-axis does this poly end
      */
-    factory.createPolyAbCd =  function(coeffs,startPoint,endPoint){
-        if(!Array.isArray(coeffs) || coeffs.length!=4)
+    factory.createPolyAbCd = function(coeffs, startPoint, endPoint) {
+        if (!Array.isArray(coeffs) || coeffs.length != 4)
             throw new Error('expecting parameter of type array and length 4');
 
-        if(!angular.isNumber(startPoint) || startPoint < 0)
+        if (!angular.isNumber(startPoint) || startPoint < 0)
             throw new Error('expecting a valid startpoint');
 
-        if(!angular.isNumber(endPoint) || endPoint <=startPoint)
+        if (!angular.isNumber(endPoint) || endPoint <= startPoint)
             throw new Error('expecting valid endpoint');
 
 
-        /**
-         * Polynomial of max 3rd degree
-         * @param {Array} coeffArray [description]
-         * @param {double} startPoint Point on the X-axis where to start evaluating
-         * @param {double} endPoint where on x-axis does the evaluation stop
-         */
-        var Polynomial = function(coeffArray,startPoint,endPoint){
 
-            this.A = coeffArray[3];
-            this.B = coeffArray[2];
-            this.C = coeffArray[1];
-            this.D = coeffArray[0];
-            this.startPoint=startPoint;
-            this.endPoint=endPoint;
-
-        };
-
-
-        Polynomial.prototype.evaluateAt = function(x) {
-            if(FastMath.lt(x ,this.startPoint))
-                throw new Error('Trying to evalute polynomial with x value less than the start point');
-            if(FastMath.gt(x,this.endPoint))
-                throw new Error('Trying to evaluate polynomial with x value greater than the end point');
-            return this.A * Math.pow(x-this.startPoint,3) + this.B * Math.pow(x-this.startPoint,2) + this.C*(x-this.startPoint) + this.D;
-        };
-
-
-        /**
-         * Takes derivative of this polynomial and returns a new polynomial
-         * @returns {Polynomial} a new polynomial
-         */
-        Polynomial.prototype.derivative = function() {
-            var b = 3*this.A;
-            var c = 2*this.B;
-            var d = this.C;
-            
-            return new Polynomial([d,c,b,0],this.startPoint,this.endPoint);
-        };
-
-        /**
-         * Calculate cubic roots - props to http://stackoverflow.com/a/27176424/1579778
-         */
-        Polynomial.prototype.roots = function() {
-
-            var that=this;
-            var roots=calculateCubicRoots(this.A,this.B,this.C,this.D);
-            return roots.filter(function(value){
-
-                if(FastMath.geq(value,that.startPoint) && FastMath.leq(value,that.endPoint))
-                    return true;
-            });
-
-        };
-
-
-
-        Polynomial.prototype.toPrettyString = function() {
-            return this.this.A+'(x-'+ this.startPoint +')^3 + '+this.B+'(x-'+this.startPoint+')^2 + '+this.C+'(x-' + this.startPoint + ')'+this.D;
-        };
-
-
-
-        var poly = new Polynomial(coeffs.reverse(),startPoint,endPoint);
+        var poly = new Polynomial(coeffs.reverse(), startPoint, endPoint);
 
         return poly;
 
