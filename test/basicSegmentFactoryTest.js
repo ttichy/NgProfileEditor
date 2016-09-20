@@ -154,11 +154,102 @@ describe('Unit: basicSegmentFactory testing', function() {
     expect(finalValues[4]).toBe(4);
 
 
+  });
 
 
+
+
+    it("Should create a basic segment [0,0], [1,1] with constant velocity=3, and correctly evaluate", function() {
+    var seg = basicSegmentFactory.createBasicSegment({
+      v0: 3,
+      duration: 1
+    });
+
+
+    seg.setInitialValues([0, 0, 0, 0]);
+
+    expect(seg.evaluatePositionAt(0)).toBe(0);
+    expect(seg.evaluatePositionAt(0.5)).toBe(1.5);
+    expect(seg.evaluatePositionAt(1)).toBe(3);
+
+
+    expect(seg.evaluateVelocityAt(0)).toBe(3);
+    expect(seg.evaluateVelocityAt(0.5)).toBe(3);
+    expect(seg.evaluateVelocityAt(1)).toBe(3);
+
+
+    expect(seg.evaluateAccelerationAt(0)).toBe(0);
+    expect(seg.evaluateAccelerationAt(0.5)).toBe(0);
+    expect(seg.evaluateAccelerationAt(1)).toBe(0);
+
+
+    expect(seg.evaluateJerkAt(0)).toBe(0);
+    expect(seg.evaluateJerkAt(0.5)).toBe(0);
+    expect(seg.evaluateJerkAt(1)).toBe(0);
 
   });
 
+
+  it("Should create a basic segment [1,1], [1,1] with constant velocity=3, and correctly evaluate", function() {
+    var seg = basicSegmentFactory.createBasicSegment({
+      v0: 3,
+      duration: 1
+    });
+
+
+    seg.setInitialValues([1, 3, 0, 0]);
+
+    expect(seg.evaluatePositionAt(1)).toBe(3);
+    expect(seg.evaluatePositionAt(1.5)).toBe(4.5);
+    expect(seg.evaluatePositionAt(2)).toBe(6);
+
+
+    expect(seg.evaluateVelocityAt(1)).toBe(3);
+    expect(seg.evaluateVelocityAt(1.5)).toBe(3);
+    expect(seg.evaluateVelocityAt(2)).toBe(3);
+
+
+    expect(seg.evaluateAccelerationAt(1)).toBe(0);
+    expect(seg.evaluateAccelerationAt(1.5)).toBe(0);
+    expect(seg.evaluateAccelerationAt(2)).toBe(0);
+
+
+    expect(seg.evaluateJerkAt(1)).toBe(0);
+    expect(seg.evaluateJerkAt(1.5)).toBe(0);
+    expect(seg.evaluateJerkAt(2)).toBe(0);
+
+  });
+
+
+  it("Should create a basic segment [1,1], [1,1] with constant position=4.5, and correctly evaluate", function() {
+    var seg = basicSegmentFactory.createBasicSegment({
+      p0: 4.5,
+      duration: 1
+    });
+
+
+    seg.setInitialValues([1, 0, 0, 0]);
+
+    expect(seg.evaluatePositionAt(1)).toBe(4.5);
+    expect(seg.evaluatePositionAt(1.5)).toBe(4.5);
+    expect(seg.evaluatePositionAt(2)).toBe(4.5);
+
+
+    expect(seg.evaluateVelocityAt(1)).toBe(0);
+    expect(seg.evaluateVelocityAt(1.5)).toBe(0);
+    expect(seg.evaluateVelocityAt(2)).toBe(0);
+
+
+    expect(seg.evaluateAccelerationAt(1)).toBe(0);
+    expect(seg.evaluateAccelerationAt(1.5)).toBe(0);
+    expect(seg.evaluateAccelerationAt(2)).toBe(0);
+
+
+    expect(seg.evaluateJerkAt(1)).toBe(0);
+    expect(seg.evaluateJerkAt(1.5)).toBe(0);
+    expect(seg.evaluateJerkAt(2)).toBe(0);
+
+  });
 
 
 });

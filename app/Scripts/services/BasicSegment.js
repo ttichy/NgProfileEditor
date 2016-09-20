@@ -8,7 +8,8 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 
 		//definition one of jerk, accel, velocity, position
 		
-		
+		MotionSegment.MotionSegment.call(this);
+
 		this.duration=definition.duration;
 
 		this.j=null;
@@ -43,7 +44,7 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 
 	/**
 	 * Sets the initial values for this basic segment
-	 * @param {Array} array of initial values [t0,j,a0,v0,x0]		
+	 * @param {Array} array of initial values [t0,x0,v0,a0]		
 
 	 */
 	BasicMotionSegment.prototype.setInitialValues = function(initialValues) {
@@ -83,8 +84,8 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 			d=x0;
 		}
 
-		if(this.x0)
-			d=this.x0;
+		if(this.p0)
+			d=this.p0;
 
 		this.t0=t0;
 
