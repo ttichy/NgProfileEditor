@@ -11,15 +11,16 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 		
 		this.duration=definition.duration;
 
-		this.j=0;
-		this.a0=0;
-		this.v0=0;
-		this.p0=0;
+		this.j=null;
+		this.a0=null;
+		this.v0=null;
+		this.p0=null;
 
+		// setup definition and convert from physical units to straight up polynomial
 		if(definition.jerk)
-			this.j=definition.jerk;
+			this.j=definition.jerk/6;
 		if(definition.a0)
-			this.a0=definition.a0;
+			this.a0=definition.a0/2;
 		if(definition.v0)
 			this.v0=definition.v0;
 		if(definition.p0)
@@ -42,21 +43,55 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 
 	/**
 	 * Sets the initial values for this basic segment
-	 * @param {number} t0 initial time		
-	 * @param {number} x0 initial position
-	 * @param {number} v0 initial velocity
-	 * @param {number} a0 initial acceleration
+	 * @param {Array} array of initial values [t0,j,a0,v0,x0]		
+
 	 */
-	BasicMotionSegment.prototype.setInitialValues = function(t0,x0,v0,a0) {
+	BasicMotionSegment.prototype.setInitialValues = function(initialValues) {
+
+		if(!Array.isArray(initialValues) || initialValues.length !=4)
+			throw new Error("setInitialValues: expects an array of length 4");
+
+		var t0=initialValues[0];
+		var x0=initialValues[1];
+		var v0=initialValues[2];
+		var a0=initialValues[3];
+
 		if(!FastMath.areNumeric(t0,x0,v0))
-			throw new Error("setInitialValues: expects t0,x0,v0 arguments to be numeric")	;
+			throw new Error("setInitialValues: expects initial values to be numeric")	;
+		var a=0,b=0,c=0,d=0;
 
+		// segment setup has jerk
+		if(this.j)
+		{
+			a=this.j;
+			b=a0;
+			c=v0;
+			d=x0;
+		}
 
+		// segment setup with accel
+		if(this.a0)
+		{
+			b=this.a0;
+			c=v0;
+			d=x0;
+		}
+
+		if(this.v0)
+		{
+			c=this.v0;
+			d=x0;
+		}
+
+		if(this.x0)
+			d=this.x0;
+
+		this.t0=t0;
 
 
 		//since we have initial values, we can setup the polynomials
 		//Ax^3 + Bx^2 + Cx +D
-		var poly=polyFactory.createPolyAbCd([this.j,a0,v0,x0],t0,t0+this.duration);
+		var poly=polyFactory.createPolyAbCd([a,b,c,d],t0,t0+this.duration);
 
         this.positionPoly = poly;
         this.velocityPoly=this.positionPoly.derivative();
@@ -68,7 +103,32 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 
 	};
 
+	/**
+	 * Gets the final time, jerk, acceleration, velocity and position
+	 * @return {Array} [time,jerk,acceleration, velocity, position]
+	 */
+	BasicMotionSegment.prototype.getFinalValues = function() {
+		
+		if(!this.initialized)
+			return null;
+		var tf=this.t0+this.duration;
 
+		var finalJerk=this.jerkPoly.evaluateAt(tf);
+		var finalAccel=this.accelPoly.evaluateAt(tf);
+		var finalVelocity=this.velocityPoly.evaluateAt(tf);
+		var finalPosition=this.positionPoly.evaluateAt(tf);
+
+		return [tf,finalJerk,finalAccel,finalVelocity,finalPosition];
+
+
+	};
+
+
+	/**
+	 * Evalutes position at time x
+	 * @param  {Number} x time to evaluate at in [sec]
+	 * @return {Number}   position in [rad/s] or[m]
+	 */
 	BasicMotionSegment.prototype.evaluatePositionAt = function(x) {
 		if(this.initialized)
 			return this.positionPoly.evaluateAt(x);
@@ -105,7 +165,7 @@ app.factory('basicSegmentFactory', ['polynomialFactory','MotionSegment','FastMat
 	factory.createBasicSegment = function(definition)
 	{
 		//TODO: check parameters
-
+		
 		var segment = new BasicMotionSegment(definition);
 
 		return segment;
