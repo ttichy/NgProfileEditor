@@ -70,6 +70,13 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 
 	};
 
+	/**
+	 * Clears all segments in the stash
+	 */
+	SegmentStash.prototype.clearAllSegments = function() {
+		this.nodesHash={};
+		this.segmentsList.clearAll();
+	};
 
 	/**
 	 * Deletes segment specified by segment id
@@ -140,6 +147,8 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 	SegmentStash.prototype.initializeWithSegments = function(segments) {
 		if(!Array.isArray(segments))
 			throw new Error("expecting an array of MotionSegments");
+
+		this.clearAllSegments();
 
 			for (var i = 0; i < segments.length; i++) {
 				this.insertAt(segments[i],null);

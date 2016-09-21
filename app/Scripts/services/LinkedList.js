@@ -46,6 +46,14 @@ app.factory('LinkedList', [ function() {
 		return node;
 	};
 
+
+	LinkedList.prototype.clearAll = function() {
+		this._length = 0;
+		this.head = null;
+		this.tail = null;
+	};
+
+
 	/**
 	 * Inserts into the list using an existing node
 	 * @param  {Node} existing existing Node
