@@ -162,6 +162,19 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		return [basicSegment, basicSegment2,basicSegment3];
 	};
 
+	/**
+	 * Calculates final time, acceleration, velocity and position for this segment
+	 * @return {Array} [tf,af,vf,pf]
+	 */
+	AccelMotionSegment.prototype.getFinalValues = function() {
+		var last = this.segments.lastSegment();
+		var tf=last.finalTime;
+		var af=last.evaluateAccelerationAt(tf);
+		var vf=last.evaluateVelocityAt(tf);
+		var pf=last.evaluatePositionAt(tf);
+
+		return [tf,af,vf,pf];
+	};
 
 
 	/**

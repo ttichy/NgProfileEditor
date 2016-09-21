@@ -44,7 +44,7 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 			if (!existingNode)
 				return null;
 
-			newNode = this.segmentsList.insertAt(segment, existingNode);
+			newNode = this.segmentsList.insertAt(existingNode,segment);
 
 		}
 		else
@@ -57,6 +57,27 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 
 
 
+	};
+
+
+	SegmentStash.prototype.findById = function(segmentId) {
+		var node = this.nodesHash[segmentId];
+		if(node)	
+			return this.nodesHash[segmentId].data;
+	};
+
+
+	SegmentStash.prototype.getNextSegment = function(segmentId) {
+		var node = this.nodesHash[segmentId];
+		if(node && node.next)
+			return node.next.data;
+		return null;
+	};
+
+	SegmentStash.prototype.getPreviousSegment = function(segmentId) {
+		var node = this.nodesHash[segmentId];
+		if(node)
+			return node.previous.data;
 	};
 
 

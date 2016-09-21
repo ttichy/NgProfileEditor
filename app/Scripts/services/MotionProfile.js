@@ -45,8 +45,8 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	MotionProfile.prototype.GetAllBasicSegments = function() {
 		var allSegments=[];
 		// using associative array to hold all segments -> quick and easy to search
-		this.segments.GetAllSegments().forEach(function(element){
-			allSegments.push(element.GetAllSegments());
+		this.segments.getAllSegments().forEach(function(element){
+			allSegments.push(element.getAllSegments());
 		});
 
 		// previous code gets us an array of arrays, we need to flatten it
@@ -74,12 +74,35 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	 * Inserts or appends a segment into the motion profile
 	 * @param {MotionSegment} segment Segment to insert into the profile
 	 */
-	MotionProfile.prototype.InsertSegment=function(segment) {
+	MotionProfile.prototype.InsertSegment=function(segment,segmentId) {
 		
 		if(!(segment instanceof MotionSegment.MotionSegment))
 			throw new Error('Attempting to insert an object which is not a MotionSegment');
 
-		this.segments.Insert(segment);
+		//need to get final values of previous segment
+		var prev = this.segments.getPreviousSegment(segmentId);
+
+		//modify the segment being inserted to make sure initial values == previous segment's final values
+		var lastValues=prev.getFinalValues();
+		segment.ModifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);
+
+		var newSegment=this.segments.insertAt(segment,segmentId);
+		if(!newSegment)
+			throw new Error("inserting a segment failed");
+
+		//after inserting a segment, all subsequent segments must be recalculated
+		var current=this.segments.getNextSegment(newSegment.id);
+		while(current){
+			prev=this.segments.getPreviousSegment(current.id);
+			lastValues=prev.getFinalValues();
+			current.ModifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);
+
+			//move next
+			current=this.segments.getNextSegment(current.id);
+		}
+
+
+
 	};
 
 

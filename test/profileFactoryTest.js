@@ -314,7 +314,7 @@ describe('Unit: motionProfileFactory testing', function() {
     });
 
 
-    xit('should insert a segment in between two other segments', function() {
+    it('should insert a segment in between two other segments', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
@@ -328,7 +328,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment3=accelSegmentFactory.MakeFromVelocity(2, 4, 10, 5, 0, 0.5);
 
-        profile.InsertSegment(accelSegment3);
+        profile.InsertSegment(accelSegment3,accelSegment2.id);
 
         //after inserting, there should be 3 segments total
         expect(profile.GetAllSegments().length).toBe(3);
