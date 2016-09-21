@@ -69,6 +69,37 @@ describe('Unit: accelSegmentFactory testing', function() {
 
   });
 
+  it('should create an accel segment (t0=0,tf=2,p0=0,v0=0,vf=10,j=0.5), modify initial conditions and evaluate correctly', function(){
+    
+    var seg = accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
+    
+    var newSeg=seg.ModifyInitialValues(0,0,0,1);
+
+
+    var seg1=newSeg.getAllSegments()[0];
+    var seg2=newSeg.getAllSegments()[1];
+    var seg3=newSeg.getAllSegments()[2];
+
+
+    expect(seg1.initialTime).toBe(0);
+    expect(seg1.finalTime).toBe(0.5);
+    expect(seg1.evaluatePositionAt(0)).toBe(1);
+    expect(seg1.evaluatePositionAt(0.5)).toBeCloseTo(1.2777777,4);
+
+    expect(seg2.initialTime).toBe(0.5);
+    expect(seg2.finalTime).toBe(1.5);
+    expect(seg2.evaluatePositionAt(0.5)).toBeCloseTo(1.2777777,4);
+    expect(seg2.evaluatePositionAt(1.5)).toBeCloseTo(6.2777777777777,4);
+
+
+    expect(seg3.initialTime).toBe(1.5);
+    expect(seg3.finalTime).toBe(2);
+    expect(seg3.evaluatePositionAt(1.5)).toBeCloseTo(6.2777777777777,4);
+    expect(seg3.evaluatePositionAt(2)).toBe(11);
+
+  });
+
+
 
 });
 

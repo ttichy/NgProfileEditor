@@ -180,20 +180,24 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {float} p0 new initial position
 	 */
 	AccelMotionSegment.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
-		var last=this.segments.GetAllSegments.length-1;
-		var tf=this.segments.GetAllSegments[last].finalTime;
+
+		var tf=this.segments.lastSegment().finalTime;
+
+
 		var af = this.EvaluateAccelerationAt(tf);
 		var vf=this.EvaluateVelocityAt(tf);
 
-		var jPct;
-		if(last===0)
+		var jPct,
+			len=this.segments.countSegments();
+		if(len===0)
 			jPct=0;
-		else if(last==1)
+		else if(len==1)
 			jPct=1;
 		else
 		{
-			var firstDuration=this.segments.GetAllSegments[0].finalTime-this.segments.GetAllSegments[0].initialTime;
-			var totalDuration=this.segments.GetAllSegments[2].finalTime-this.segments.GetAllSegments[0].initialTime;
+			var allSegments=this.segments.getAllSegments();
+			var firstDuration=allSegments[0].finalTime-allSegments[0].initialTime;
+			var totalDuration=allSegments[2].finalTime-allSegments[0].initialTime;
 			jPct=2*firstDuration/totalDuration;
 
 		}

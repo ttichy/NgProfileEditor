@@ -91,7 +91,30 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 
 	};
 
+	/**
+	 * Gets the last segment
+	 * @return {MotionSegment} last segment in the list
+	 */
+	SegmentStash.prototype.lastSegment = function() {
+		return this.segmentsList.tail.data;
+	};
 
+
+	SegmentStash.prototype.firstSegment = function() {
+		return this.segmentsList.head.data;
+	};
+
+
+
+	SegmentStash.prototype.countSegments = function() {
+		return this.segmentsList.length();
+	};
+
+	/**
+	 * Find segment within the stash that starts with the specified time
+	 * @param  {Number} initialTime initial time
+	 * @return {MotionSegment}             segment that starts with the specified initial time
+	 */
 	SegmentStash.prototype.findSegmentWithInitialTime = function(initialTime) {
 
 

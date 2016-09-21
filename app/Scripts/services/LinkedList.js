@@ -102,7 +102,7 @@ app.factory('LinkedList', [ function() {
 	/**
 	 * Returns current length of the linked list
 	 */
-	LinkedList.prototype.Length = function() {
+	LinkedList.prototype.length = function() {
 		return this._length;
 	};
 

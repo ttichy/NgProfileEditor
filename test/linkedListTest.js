@@ -27,11 +27,11 @@ describe('Unit: linked list functions-', function() {
     };
 
     list.add(data1);
-    expect(list.Length()).toBe(1);
+    expect(list.length()).toBe(1);
     expect(list.searchNodeAt(1).data).toBe(data1);
 
     list.add(data2);
-    expect(list.Length()).toBe(2);
+    expect(list.length()).toBe(2);
     expect(list.searchNodeAt(2).data).toBe(data2);
 
 
@@ -59,7 +59,7 @@ describe('Unit: linked list functions-', function() {
 
     list.insertAt(node,data1p5);
 
-    expect(list.Length()).toBe(3);
+    expect(list.length()).toBe(3);
     expect(list.searchNodeAt(2).data).toBe(data1p5);
     expect(list.searchNodeAt(1).data).toBe(data1);
     expect(list.searchNodeAt(3).data).toBe(data2);
@@ -89,7 +89,7 @@ describe('Unit: linked list functions-', function() {
 
     var middle=list.insertAt(node,data1p5);
 
-    expect(list.Length()).toBe(3);
+    expect(list.length()).toBe(3);
     expect(list.searchNodeAt(2).data).toBe(data1p5);
     expect(list.searchNodeAt(1).data).toBe(data1);
     expect(list.searchNodeAt(3).data).toBe(data2);
@@ -124,7 +124,7 @@ describe('Unit: linked list functions-', function() {
 
     var middle=list.insertAt(node,data1p5);
 
-    expect(list.Length()).toBe(3);
+    expect(list.length()).toBe(3);
     expect(list.searchNodeAt(2).data).toBe(data1p5);
     expect(list.searchNodeAt(1).data).toBe(data1);
     expect(list.searchNodeAt(3).data).toBe(data2);
@@ -133,7 +133,7 @@ describe('Unit: linked list functions-', function() {
     var removed=list.removeNode(middle);
     expect(removed).toBe(middle);
 
-    expect(list.Length()).toBe(2);
+    expect(list.length()).toBe(2);
     expect(list.searchNodeAt(1).data).toBe(data1);
     expect(list.searchNodeAt(2).data).toBe(data2);
 
