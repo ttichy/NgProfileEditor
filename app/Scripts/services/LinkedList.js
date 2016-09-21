@@ -66,6 +66,7 @@ app.factory('LinkedList', [ function() {
 		var prev = existing.previous;
 
 		node.next=existing;
+		existing.previous=node;
 		
 		// if there is a previous node, wire it up
 		if(prev)

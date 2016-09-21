@@ -333,6 +333,8 @@ describe('Unit: motionProfileFactory testing', function() {
         //after inserting, there should be 3 segments total
         expect(profile.GetAllSegments().length).toBe(3);
 
+        var allBasicSegments=profile.GetAllBasicSegments();
+
         //also, the profile needs to be valid
         expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
 
