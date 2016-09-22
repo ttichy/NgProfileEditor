@@ -182,6 +182,61 @@ describe('Unit: linked list functions-', function() {
   });
 
 
+  it("should successfully delete the first node", function() {
+
+    var list = linkedList.makeLinkedList();
+
+    var data1 = {
+      "data1": 1
+    };
+    var data2 = {
+      "data2": 2
+    };
+
+    var data3 = {
+      "data3": 3
+    };    
+
+
+    var first = list.add(data1);
+    list.add(data2);
+    list.add(data3);
+
+    var removed=list.removeNode(first);
+
+    expect(removed).toBe(first);
+
+
+  });
+
+  it("should successfully delete the last node", function() {
+
+    var list = linkedList.makeLinkedList();
+
+    var data1 = {
+      "data1": 1
+    };
+    var data2 = {
+      "data2": 2
+    };
+
+    var data3 = {
+      "data3": 3
+    };    
+
+
+    list.add(data1);
+    list.add(data2);
+    var last = list.add(data3);
+
+    var removed=list.removeNode(last);
+
+    expect(removed).toBe(last);
+
+
+  });
+
+
 
 });
   
