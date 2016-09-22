@@ -250,11 +250,12 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {[type]} jPct  [jerk as a percent of time]
 	 * @returns {AccelMotionSegment} [freshly created accel segment]
 	 */
-	factory.MakeFromVelocity= function(t0,tf,p0,v0,vf,jPct){
+	factory.MakeFromTimeVelocity= function(t0,tf,p0,v0,vf,jPct){
 
 		if(angular.isUndefined(jPct) || jPct<0 || jPct>1)
 			throw new Error('expecting jerk between <0,1>');
 		
+		var dataPermutation="time-velocity";
 
 		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
 

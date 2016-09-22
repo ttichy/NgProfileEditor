@@ -32,11 +32,11 @@ xdescribe('Unit: profile helper functions-', function() {
   it('profile helper should validate basic segments in a valid profile', function() {
     var profile=motionProfileFactory.CreateMotionProfile("rotary");
 
-    var accelSegment=accelSegmentFactory.MakeFromVelocity(0,2,0,0,10,0.5);
+    var accelSegment=accelSegmentFactory.MakeFromTimeVelocity(0,2,0,0,10,0.5);
 
     profile.AppendSegment(accelSegment);
 
-    accelSegment=accelSegmentFactory.MakeFromVelocity(2,4,10,10,0,0.5);
+    accelSegment=accelSegmentFactory.MakeFromTimeVelocity(2,4,10,10,0,0.5);
     
     profile.AppendSegment(accelSegment);
 

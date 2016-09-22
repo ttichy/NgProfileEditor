@@ -40,8 +40,8 @@ describe('Unit: valid factory injection', function() {
 
 
 
-  it('accelSegmentFactory should have MakeFromVelocity function', function() {
-  	expect(angular.isFunction(accelSegmentFactory.MakeFromVelocity)).toBe(true);
+  it('accelSegmentFactory should have MakeFromTimeVelocity function', function() {
+  	expect(angular.isFunction(accelSegmentFactory.MakeFromTimeVelocity)).toBe(true);
   });
 
 

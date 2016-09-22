@@ -40,11 +40,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.PutSegment(accelSegment);
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 0, 0.5);
 
         profile.PutSegment(accelSegment);
         expect(profile.GetAllBasicSegments().length).toBe(6);
@@ -80,14 +80,14 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.PutSegment(accelSegment);
 
         var segments = profile.GetAllBasicSegments();
 
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(0, 1, 0, 0, 7.5, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 1, 0, 0, 7.5, 0.5);
 
         profile.PutSegment(accelSegment);
         expect(profile.GetAllBasicSegments().length).toBe(6);
@@ -186,13 +186,13 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegment);
 
 
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(2, 3, 0, 0, 7.5, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(2, 3, 0, 0, 7.5, 0.5);
 
         profile.appendSegment(accelSegment);
 
@@ -218,22 +218,22 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegment);
 
 
 
-        var accelSegmentDelete = accelSegmentFactory.MakeFromVelocity(2, 3, 0, 0, 7.5, 0.5);
+        var accelSegmentDelete = accelSegmentFactory.MakeFromTimeVelocity(2, 3, 0, 0, 7.5, 0.5);
 
         profile.appendSegment(accelSegmentDelete);
 
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(3, 5, 0, 0, 3, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(3, 5, 0, 0, 3, 0.5);
 
         profile.appendSegment(accelSegment);
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(5, 8, 0, 0, 0, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(5, 8, 0, 0, 0, 0.5);
 
         profile.appendSegment(accelSegment);
 
@@ -263,22 +263,22 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegmentDelete = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegmentDelete = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegmentDelete);
 
 
 
-        var accelSegment = accelSegmentFactory.MakeFromVelocity(2, 3, 0, 0, 7.5, 0.5);
+        var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(2, 3, 0, 0, 7.5, 0.5);
 
         profile.appendSegment(accelSegment);
 
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(3, 5, 0, 0, 3, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(3, 5, 0, 0, 3, 0.5);
 
         profile.appendSegment(accelSegment);
 
-        accelSegment = accelSegmentFactory.MakeFromVelocity(5, 8, 0, 0, 0, 0.5);
+        accelSegment = accelSegmentFactory.MakeFromTimeVelocity(5, 8, 0, 0, 0, 0.5);
 
         profile.appendSegment(accelSegment);
 
@@ -310,11 +310,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegment1);
 
-        var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+        var accelSegment2 = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 0, 0.5);
 
         profile.appendSegment(accelSegment2);
 
@@ -331,11 +331,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegment1);
 
-        var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+        var accelSegment2 = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 0, 0.5);
 
         profile.appendSegment(accelSegment2);
 
@@ -352,11 +352,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegment1);
 
-        var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+        var accelSegment2 = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 0, 0.5);
 
         profile.appendSegment(accelSegment2);
 
@@ -374,15 +374,15 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 10, 0.5);
+        var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.appendSegment(accelSegment1);
 
-        var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 0, 0.5);
+        var accelSegment2 = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 0, 0.5);
 
         profile.appendSegment(accelSegment2);
 
-        var accelSegment3=accelSegmentFactory.MakeFromVelocity(2, 4, 10, 5, 0, 0.5);
+        var accelSegment3=accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 5, 0, 0.5);
 
         profile.InsertSegment(accelSegment3,accelSegment2.id);
 
@@ -403,11 +403,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var profile = motionProfileFactory.CreateMotionProfile("rotary");
 
-        var accelSegment1 = accelSegmentFactory.MakeFromVelocity(0, 2, 0, 0, 5, 0.5);
+        var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 5, 0.5);
 
         profile.appendSegment(accelSegment1);
 
-        var accelSegment2 = accelSegmentFactory.MakeFromVelocity(2, 4, 10, 10, 3, 0.5);
+        var accelSegment2 = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 3, 0.5);
 
         profile.appendSegment(accelSegment2);
 

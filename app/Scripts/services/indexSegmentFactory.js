@@ -136,7 +136,7 @@ app.factory('indexSegmentFactory', ['AccelSegment','FastMath', function(accelSeg
 		}
 
 		
-		return factory.MakeFromVelocity(t0,tf,p0,v0,vf,jPct);
+		return factory.MakeFromTimeVelocity(t0,tf,p0,v0,vf,jPct);
 
 
 	};
