@@ -104,12 +104,11 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 		if(jPct===0){
 			// consists of one basic segment
-			coeffs=[p0,v0,(vf-v0)/(tf-t0),0];
+			coeffs=[0,0.5*(vf-v0)/(tf-t0),v0,p0];
 
 			basicSegment = basicSegmentFactory.CreateBasicSegment(t0,tf,coeffs);
 
-			accelSegment=new AccelMotionSegment([basicSegment]);
-			return accelSegment;
+			return [basicSegment];
 		}
 
 		var aMax;
@@ -124,7 +123,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 			aMax = (vf-v0)/th;
 			jerk = aMax/th;
 
-			coeffs1=[p0,v0,0,jerk/6];
+			coeffs1=[jerk/6,0,v0,p0];
 
 			basicSegment=basicSegmentFactory.CreateBasicSegment(t0,t0+th,coeffs1);
 	
@@ -132,9 +131,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	
 			basicSegment2=basicSegmentFactory.CreateBasicSegment(t0+th,tf,coeffs2);
 	
-			accelSegment = new AccelMotionSegment([basicSegment,basicSegment2]);
-	
-			return accelSegment;
+			return [basicSegment,basicSegment2];
 		}
 
 		// last case is three basic segments
@@ -256,6 +253,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 			throw new Error('expecting jerk between <0,1>');
 		
 		var dataPermutation="time-velocity";
+		this.finalVelocity=vf;
 
 		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
 
@@ -265,6 +263,46 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 
 	};
+
+	/**
+	 * Makes a new AccelMotionSegment given velocity information
+	 * @param {Number} t0 [initial time]
+	 * @param {Number} tf [final time]
+	 * @param {Number} p0 [initial position]
+	 * @param {Number} v0 [final position]
+	 * @param {Number} pf final velocity
+	 * @param {Number} jPct  [jerk as a percent of time]
+	 * @returns {AccelMotionSegment} [freshly created accel segment]
+	 */
+	factory.MakeFromTimeDistance = function(t0, tf, p0, v0, pf, jPct) {
+
+		if (angular.isUndefined(jPct) || jPct < 0 || jPct > 1)
+			throw new Error('expecting jerk between <0,1>');
+
+		var dataPermutation = "time-distance";
+		this.finalPosition=pf;
+
+		//need to convert from pf to vf
+		
+		var t1=0.5*jPct*(tf-t0);
+		var tm=(tf-t0)-2 * t1;
+		var t2= t1+tm;
+		var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
+
+		var vf=v0+aMax*(tf+t2-t1)/2;
+
+
+		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0, tf, p0, v0, vf, jPct);
+
+		var accelSegment = new AccelMotionSegment(basicSegments);
+
+		return accelSegment;
+
+
+	};
+
+
+
 
 
 	factory.MakeFromPosition = function(t0,tf,p0,pf,v0,j){
