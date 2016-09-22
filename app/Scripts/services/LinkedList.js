@@ -96,7 +96,12 @@ app.factory('LinkedList', [ function() {
 		//this could be the last node
 		if(next)
 			next.previous=prev;
-		prev.next=next;
+
+		//could be the first node
+		if(prev)
+			prev.next=next;
+		else
+			this.head=next;
 
 		var nodeToRemove=node;
 		node=null;

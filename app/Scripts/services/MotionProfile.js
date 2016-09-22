@@ -28,6 +28,10 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 
 		this.ProfileType = "rotary";
 
+
+		this.initialPosition=0;
+		this.initialVelocity=0;
+
 		if (type === "linear")
 			this.ProfileType = "linear";
 
@@ -38,6 +42,17 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 
 	MotionProfile.prototype = Object.create(MotionSegment.MotionSegment.prototype);
 	MotionProfile.prototype.constructor = MotionProfile;
+
+
+	/**
+	 * Set the initial position and velocity for this motion profile
+	 * @param {Number} position position in [rad] or [m]
+	 * @param {Number} velocity velocity in [rad/s] or [m/s]
+	 */
+	MotionProfile.prototype.setInitialConditions = function(position, velocity) {
+		this.initialPosition=position;
+		this.initialVelocity=velocity;
+	};
 
 	/**
 	 * Gets all basic segments that exist in the profile. Basic Segments are the most basic building blocks
@@ -105,9 +120,25 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 
 	};
 
-
+	/**
+	 * Append segment at the end of the current profile
+	 * @param  {[type]} segment [description]
+	 * @return {[type]}         [description]
+	 */
 	MotionProfile.prototype.appendSegment = function(segment) {
-		this.segments.insertAt(segment,null);
+		if (!(segment instanceof MotionSegment.MotionSegment))
+			throw new Error('Attempting to insert an object which is not a MotionSegment');
+		
+		// even though we append at the end, still have to make sure that initial/final conditions are satisfied
+
+		var lastSegment=this.segments.lastSegment();
+		if(lastSegment){
+			var lastValues=lastSegment.getFinalValues();
+			segment.ModifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);			
+		}
+
+
+		this.segments.insertAt(segment, null);
 	};
 
 
@@ -173,8 +204,40 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		if(!fastMath.isNumeric(segmentId) || fastMath.lt(segmentId,0))
 			throw new Error('expect segmentId to be a positive integer');
 
+		var previous = this.segments.getPreviousSegment(segmentId);
+		var current=this.segments.getNextSegment(segmentId);
 
-		return this.segments.delete(segmentId);
+		var segToDelete=this.segments.delete(segmentId);
+		if(!segToDelete)
+			throw new Error("Unable to delete segment with id "+segmentId);
+
+		//could be the only segment
+		if(this.segments.countSegments()===0)
+			return segToDelete;
+
+		var previousValues;
+
+		//handle first segment
+		if(!previous)
+		{
+			previousValues=[0,0,this.initialVelocity,this.initialPosition];
+		}
+		else
+			previousValues=previous.getFinalValues();
+
+		while(current){
+			
+			current.ModifyInitialValues(previousValues[0],previousValues[1],previousValues[2],previousValues[3]);
+
+			//move forward
+			previous=current;
+			current = this.segments.getNextSegment(current.id);
+			previousValues=previous.getFinalValues();
+
+		}
+
+
+		return segToDelete;
 
 	};
 

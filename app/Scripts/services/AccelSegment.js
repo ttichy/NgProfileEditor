@@ -178,6 +178,19 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 
 	/**
+	 * Calculates initial time, acceleration, velocity and position for this segment
+	 * @return {Array} [tf,af,vf,pf]
+	 */
+	AccelMotionSegment.prototype.getInitialValues = function() {
+		var last = this.segments.firstSegment();
+		var t0 = last.initialTime;
+		var a0 = last.evaluateAccelerationAt(t0);
+		var v0 = last.evaluateVelocityAt(t0);
+		var p0 = last.evaluatePositionAt(t0);
+
+		return [t0, a0, v0, p0];
+	};
+	/**
 	 * Modifies segment initial values. Used when adding a point in the middle of a segment.
 	 * @param {float} t0 new initial time
 	 * @param {float} a0 new initial acceleration

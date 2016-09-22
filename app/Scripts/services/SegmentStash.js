@@ -76,8 +76,9 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 
 	SegmentStash.prototype.getPreviousSegment = function(segmentId) {
 		var node = this.nodesHash[segmentId];
-		if(node)
+		if(node && node.previous)
 			return node.previous.data;
+		return null;
 	};
 
 
@@ -114,7 +115,9 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 		var deletedNode=nodeToDel;
 		delete this.nodesHash[segmentId];
 
-		return this.segmentsList.removeNode(nodeToDel);
+		this.segmentsList.removeNode(nodeToDel);
+
+		return nodeToDel.data;
 
 
 	};
@@ -124,12 +127,16 @@ app.factory('SegmentStash',['FastMath', 'LinkedList', function(FastMath,LinkedLi
 	 * @return {MotionSegment} last segment in the list
 	 */
 	SegmentStash.prototype.lastSegment = function() {
-		return this.segmentsList.tail.data;
+		if(this.segmentsList.tail)
+			return this.segmentsList.tail.data;
+		return null;
 	};
 
 
 	SegmentStash.prototype.firstSegment = function() {
-		return this.segmentsList.head.data;
+		if(this.segmentsList.head)
+			return this.segmentsList.head.data;
+		return null;
 	};
 
 
