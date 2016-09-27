@@ -187,6 +187,29 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 		return [t0, a0, v0, p0];
 	};
+
+
+	var AccelSegmentTimeVelocity = function(t0,tf,p0,v0,vf,jPct) {
+
+		var basicSegments= AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
+
+
+		var dataPermutation="time-velocity";
+		this.segmentData = {
+			dataPermutation: "time-velocity",
+			finalVelocity: vf,
+			duration:t0-tf,
+		};
+
+		AccelMotionSegment.call(this,basicSegments);
+
+
+	};
+
+	AccelSegmentTimeVelocity.prototype = Object.create(AccelMotionSegment.prototype);
+	AccelSegmentTimeVelocity.prototype.constructor = AccelSegmentTimeVelocity;
+
+
 	/**
 	 * Modifies segment initial values. Used when adding a point in the middle of a segment.
 	 * @param {float} t0 new initial time
@@ -194,7 +217,89 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {float} v0 new initial velocity
 	 * @param {float} p0 new initial position
 	 */
-	AccelMotionSegment.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
+	AccelSegmentTimeVelocity.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
+		
+		//these are the original values.... we may be modifying them
+		var tf_old=this.segments.lastSegment().finalTime;
+		var t0_old=this.segments.firstSegment().initialTime;
+
+		var duration=tf_old-t0_old;
+
+		var tf=t0+duration;
+
+
+		var vf=this.EvaluateVelocityAt(tf_old);
+
+		var jPct,
+			len=this.segments.countSegments();
+		if(len===0)
+			jPct=0;
+		else if(len==1)
+			jPct=1;
+		else
+		{
+			var allSegments=this.segments.getAllSegments();
+			var firstDuration=allSegments[0].finalTime-allSegments[0].initialTime;
+			var totalDuration=allSegments[2].finalTime-allSegments[0].initialTime;
+			jPct=2*firstDuration/totalDuration;
+
+		}
+
+		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
+
+		this.initialTime=newBasicSegments[0].initialTime;
+		this.finalTime=newBasicSegments[newBasicSegments.length-1].finalTime;
+
+		this.segments.initializeWithSegments(newBasicSegments);
+
+		return this;
+
+
+
+	};
+
+
+
+	var AccelSegmentTimeDistance = function(t0,tf,p0,v0,pf,jPct) {
+
+
+		this.segmentData = {
+			dataPermutation: "time-distance",
+			finalPosition: pf,
+			duration:t0-tf,
+		};
+
+
+		//need to convert from pf to vf
+		
+		var t1=0.5*jPct*(tf-t0);
+		var tm=(tf-t0)-2 * t1;
+		var t2= t1+tm;
+		var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
+
+		var vf=v0+aMax*(tf+t2-t1)/2;
+
+
+		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0, tf, p0, v0, vf, jPct);
+
+
+		AccelMotionSegment.call(this,basicSegments);
+
+
+	};
+
+	AccelSegmentTimeDistance.prototype = Object.create(AccelMotionSegment.prototype);
+	AccelSegmentTimeDistance.prototype.constructor = AccelSegmentTimeDistance;
+
+
+	/**
+	 * Modifies segment initial values. Used when adding a point in the middle of a segment.
+	 * @param {float} t0 new initial time
+	 * @param {float} a0 new initial acceleration
+	 * @param {float} v0 new initial velocity
+	 * @param {float} p0 new initial position
+	 */
+	AccelSegmentTimeDistance.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
 		
 		//these are the original values.... we may be modifying them
 		var tf_old=this.segments.lastSegment().finalTime;
@@ -252,12 +357,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		if(angular.isUndefined(jPct) || jPct<0 || jPct>1)
 			throw new Error('expecting jerk between <0,1>');
 		
-		var dataPermutation="time-velocity";
-		this.finalVelocity=vf;
-
-		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
-
-		var accelSegment = new AccelMotionSegment(basicSegments);
+		var accelSegment = new AccelSegmentTimeVelocity(t0,tf,p0,v0,vf,jPct);
 
 		return accelSegment;
 
@@ -279,22 +379,10 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		if (angular.isUndefined(jPct) || jPct < 0 || jPct > 1)
 			throw new Error('expecting jerk between <0,1>');
 
-		var dataPermutation = "time-distance";
 		this.finalPosition=pf;
 
-		//need to convert from pf to vf
-		
-		var t1=0.5*jPct*(tf-t0);
-		var tm=(tf-t0)-2 * t1;
-		var t2= t1+tm;
-		var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
 
-		var vf=v0+aMax*(tf+t2-t1)/2;
-
-
-		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0, tf, p0, v0, vf, jPct);
-
-		var accelSegment = new AccelMotionSegment(basicSegments);
+		var accelSegment = new AccelSegmentTimeDistance(t0, tf, p0, v0, pf, jPct);
 
 		return accelSegment;
 
