@@ -198,7 +198,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		this.segmentData = {
 			dataPermutation: "time-velocity",
 			finalVelocity: vf,
-			duration:t0-tf,
+			duration:tf-t0,
 		};
 
 		AccelMotionSegment.call(this,basicSegments);
@@ -266,18 +266,13 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		this.segmentData = {
 			dataPermutation: "time-distance",
 			finalPosition: pf,
-			duration:t0-tf,
+			duration:tf-t0,
+			jerkPercent: jPct
 		};
 
 
 		//need to convert from pf to vf
-		
-		var t1=0.5*jPct*(tf-t0);
-		var tm=(tf-t0)-2 * t1;
-		var t2= t1+tm;
-		var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
-
-		var vf=v0+aMax*(tf+t2-t1)/2;
+		var vf=this.convertToFinalVelocity(t0,tf,p0,pf,v0);
 
 
 		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0, tf, p0, v0, vf, jPct);
@@ -303,31 +298,15 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		
 		//these are the original values.... we may be modifying them
 		var tf_old=this.segments.lastSegment().finalTime;
-		var t0_old=this.segments.firstSegment().initialTime;
 
-		var duration=tf_old-t0_old;
-
-		var tf=t0+duration;
+		var tf=t0+this.segmentData.duration;
 
 
 		var vf=this.EvaluateVelocityAt(tf_old);
 
-		var jPct,
-			len=this.segments.countSegments();
-		if(len===0)
-			jPct=0;
-		else if(len==1)
-			jPct=1;
-		else
-		{
-			var allSegments=this.segments.getAllSegments();
-			var firstDuration=allSegments[0].finalTime-allSegments[0].initialTime;
-			var totalDuration=allSegments[2].finalTime-allSegments[0].initialTime;
-			jPct=2*firstDuration/totalDuration;
 
-		}
 
-		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
+		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,vf,this.segmentData.jerkPercent);
 
 		this.initialTime=newBasicSegments[0].initialTime;
 		this.finalTime=newBasicSegments[newBasicSegments.length-1].finalTime;
@@ -336,8 +315,26 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 		return this;
 
+	};
 
+	/**
+	 * Helper function to convert final position to final velocity in order to construct the accel segment
+	 * @param  {Number} t0 initial time
+	 * @param  {Number} tf final time
+	 * @param  {Number} v0 initial velocity
+	 * @param  {Number} p0 initial position
+	 * @param  {Number} pf final position
+	 * @return {Number}    calculated final velocity
+	 */
+	AccelSegmentTimeDistance.prototype.convertToFinalVelocity = function(t0,tf,p0,pf,v0) {
+		var t1=0.5*this.segmentData.jerkPercent*(tf-t0);
+		var tm=(tf-t0)-2 * t1;
+		var t2= t1+tm;
+		var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
 
+		var vf=v0+aMax*(tf+t2-t1)/2;
+
+		return vf;
 	};
 
 
@@ -360,7 +357,6 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		var accelSegment = new AccelSegmentTimeVelocity(t0,tf,p0,v0,vf,jPct);
 
 		return accelSegment;
-
 
 	};
 

@@ -193,9 +193,13 @@ describe('Unit: accelSegmentFactory testing', function() {
 
   it('should create a time-distance accel segment (t0=0,tf=2,p0=0,v0=0,pf=10,j=0.5), modify initial position AND velocity and evaluate correctly', function() {
 
+
+
     var seg = accelSegmentFactory.MakeFromTimeDistance(0, 2, 0, 0, 10, 0.5);
 
-    seg.ModifyInitialValues(0, 0, 1, 1);
+    var t0=0,a0=0,v0=1,p0=1;
+
+    seg.ModifyInitialValues(t0,a0,v0,p0);
 
 
     var seg1 = seg.getAllSegments()[0];
@@ -206,18 +210,18 @@ describe('Unit: accelSegmentFactory testing', function() {
     expect(seg1.initialTime).toBe(0);
     expect(seg1.finalTime).toBe(0.5);
     expect(seg1.evaluatePositionAt(0)).toBe(1);
-    expect(seg1.evaluatePositionAt(0.5)).toBe(1.75);
+    expect(seg1.evaluatePositionAt(0.5)).toBe(1.722);
 
     expect(seg2.initialTime).toBe(0.5);
     expect(seg2.finalTime).toBe(1.5);
-    expect(seg2.evaluatePositionAt(0.5)).toBe(1.75);
-    expect(seg2.evaluatePositionAt(1.5)).toBe(7.25);
+    expect(seg2.evaluatePositionAt(0.5)).toBe(1.72);
+    expect(seg2.evaluatePositionAt(1.5)).toBe(6.725);
 
 
     expect(seg3.initialTime).toBe(1.5);
     expect(seg3.finalTime).toBe(2);
-    expect(seg3.evaluatePositionAt(1.5)).toBe(7.25);
-    expect(seg3.evaluatePositionAt(2)).toBe(12);
+    expect(seg3.evaluatePositionAt(1.5)).toBe(6.725);
+    expect(seg3.evaluatePositionAt(2)).toBe(11);
 
   });
 
