@@ -210,17 +210,17 @@ describe('Unit: accelSegmentFactory testing', function() {
     expect(seg1.initialTime).toBe(0);
     expect(seg1.finalTime).toBe(0.5);
     expect(seg1.evaluatePositionAt(0)).toBe(1);
-    expect(seg1.evaluatePositionAt(0.5)).toBe(1.722);
+    expect(seg1.evaluatePositionAt(0.5)).toBeCloseTo(1.722222,4);
 
     expect(seg2.initialTime).toBe(0.5);
     expect(seg2.finalTime).toBe(1.5);
-    expect(seg2.evaluatePositionAt(0.5)).toBe(1.72);
-    expect(seg2.evaluatePositionAt(1.5)).toBe(6.725);
+    expect(seg2.evaluatePositionAt(0.5)).toBeCloseTo(1.722222,4);
+    expect(seg2.evaluatePositionAt(1.5)).toBeCloseTo(6.722222,4);
 
 
     expect(seg3.initialTime).toBe(1.5);
     expect(seg3.finalTime).toBe(2);
-    expect(seg3.evaluatePositionAt(1.5)).toBe(6.725);
+    expect(seg3.evaluatePositionAt(1.5)).toBeCloseTo(6.722222,4);
     expect(seg3.evaluatePositionAt(2)).toBe(11);
 
   });

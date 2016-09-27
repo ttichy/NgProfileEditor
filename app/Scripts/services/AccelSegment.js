@@ -191,15 +191,15 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 	var AccelSegmentTimeVelocity = function(t0,tf,p0,v0,vf,jPct) {
 
-		var basicSegments= AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
-
-
 		var dataPermutation="time-velocity";
 		this.segmentData = {
 			dataPermutation: "time-velocity",
 			finalVelocity: vf,
 			duration:tf-t0,
+			jerkPercent:jPct
 		};
+
+		var basicSegments= AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
 
 		AccelMotionSegment.call(this,basicSegments);
 
@@ -219,33 +219,10 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 */
 	AccelSegmentTimeVelocity.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
 		
-		//these are the original values.... we may be modifying them
-		var tf_old=this.segments.lastSegment().finalTime;
-		var t0_old=this.segments.firstSegment().initialTime;
 
-		var duration=tf_old-t0_old;
+		var tf=t0+this.segmentData.duration;
 
-		var tf=t0+duration;
-
-
-		var vf=this.EvaluateVelocityAt(tf_old);
-
-		var jPct,
-			len=this.segments.countSegments();
-		if(len===0)
-			jPct=0;
-		else if(len==1)
-			jPct=1;
-		else
-		{
-			var allSegments=this.segments.getAllSegments();
-			var firstDuration=allSegments[0].finalTime-allSegments[0].initialTime;
-			var totalDuration=allSegments[2].finalTime-allSegments[0].initialTime;
-			jPct=2*firstDuration/totalDuration;
-
-		}
-
-		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
+		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,this.segmentData.finalVelocity,this.segmentData.jerkPercent);
 
 		this.initialTime=newBasicSegments[0].initialTime;
 		this.finalTime=newBasicSegments[newBasicSegments.length-1].finalTime;
@@ -265,7 +242,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 		this.segmentData = {
 			dataPermutation: "time-distance",
-			finalPosition: pf,
+			distance: pf-p0,
 			duration:tf-t0,
 			jerkPercent: jPct
 		};
@@ -302,7 +279,8 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		var tf=t0+this.segmentData.duration;
 
 
-		var vf=this.EvaluateVelocityAt(tf_old);
+		var pf=p0+this.segmentData.distance;
+		var vf =this.convertToFinalVelocity(t0,tf,p0,pf,v0);
 
 
 
