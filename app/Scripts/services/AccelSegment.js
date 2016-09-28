@@ -86,24 +86,57 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	};
 
 
-	AccelMotionSegment.prototype.calculateMaxAccelDistance = function(v0) {
-		
-		var duration = this.finalTime-this.initialTime;
+	/**
+	 * Calculates final time, acceleration, velocity and position for this segment
+	 * @return {Array} [tf,af,vf,pf]
+	 */
+	AccelMotionSegment.prototype.getFinalValues = function() {
+		var last = this.segments.lastSegment();
+		var tf=last.finalTime;
+		var af=last.evaluateAccelerationAt(tf);
+		var vf=last.evaluateVelocityAt(tf);
+		var pf=last.evaluatePositionAt(tf);
 
-		var t1=0.5*this.segmentData.jerkPercent*(duration);
-		var tm=duration-2*(t1);
-		var t2=t1;	//no skew for now
-
-		var sqr=fastMath.sqr;
+		return [tf,af,vf,pf];
+	};
 
 
-		var numerator=this.segmentData.distance - v0*(duration);
+	/**
+	 * Calculates initial time, acceleration, velocity and position for this segment
+	 * @return {Array} [tf,af,vf,pf]
+	 */
+	AccelMotionSegment.prototype.getInitialValues = function() {
+		var last = this.segments.firstSegment();
+		var t0 = last.initialTime;
+		var a0 = last.evaluateAccelerationAt(t0);
+		var v0 = last.evaluateVelocityAt(t0);
+		var p0 = last.evaluatePositionAt(t0);
 
-		var denominator = sqr(t1)/6 +0.5*t1*tm+0.5*sqr(tm)+0.5*t1*t2+tm*t2+sqr(t2)/3;
+		return [t0, a0, v0, p0];
+	};
 
-		var aMax=numerator/denominator;
+
+	var AccelSegmentTimeVelocity = function(t0,tf,p0,v0,vf,jPct) {
+
+		var dataPermutation="time-velocity";
+		this.segmentData = {
+			dataPermutation: "time-velocity",
+			finalVelocity: vf,
+			duration:tf-t0,
+			jerkPercent:jPct
+		};
+
+		var basicSegments= this.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
+
+		AccelMotionSegment.call(this,basicSegments);
+
 
 	};
+
+	
+
+	AccelSegmentTimeVelocity.prototype = Object.create(AccelMotionSegment.prototype);
+	AccelSegmentTimeVelocity.prototype.constructor = AccelSegmentTimeVelocity;
 
 
 /**
@@ -116,7 +149,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param  {Number} jPct jerk percentage
 	 * @return {Array}      Array of BasicSegment
 	 */
-	AccelMotionSegment.prototype.calculateBasicSegments=function(t0,tf,p0,v0,vf,jPct){
+	AccelSegmentTimeVelocity.prototype.calculateBasicSegments=function(t0,tf,p0,v0,vf,jPct){
 		var basicSegment, basicSegment2, basicSegment3;
 		var accelSegment;
 		var coeffs, coeffs1,coeffs2,coeffs3,coeffs4;
@@ -178,56 +211,6 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 		return [basicSegment, basicSegment2,basicSegment3];
 	};
 
-	/**
-	 * Calculates final time, acceleration, velocity and position for this segment
-	 * @return {Array} [tf,af,vf,pf]
-	 */
-	AccelMotionSegment.prototype.getFinalValues = function() {
-		var last = this.segments.lastSegment();
-		var tf=last.finalTime;
-		var af=last.evaluateAccelerationAt(tf);
-		var vf=last.evaluateVelocityAt(tf);
-		var pf=last.evaluatePositionAt(tf);
-
-		return [tf,af,vf,pf];
-	};
-
-
-	/**
-	 * Calculates initial time, acceleration, velocity and position for this segment
-	 * @return {Array} [tf,af,vf,pf]
-	 */
-	AccelMotionSegment.prototype.getInitialValues = function() {
-		var last = this.segments.firstSegment();
-		var t0 = last.initialTime;
-		var a0 = last.evaluateAccelerationAt(t0);
-		var v0 = last.evaluateVelocityAt(t0);
-		var p0 = last.evaluatePositionAt(t0);
-
-		return [t0, a0, v0, p0];
-	};
-
-
-	var AccelSegmentTimeVelocity = function(t0,tf,p0,v0,vf,jPct) {
-
-		var dataPermutation="time-velocity";
-		this.segmentData = {
-			dataPermutation: "time-velocity",
-			finalVelocity: vf,
-			duration:tf-t0,
-			jerkPercent:jPct
-		};
-
-		var basicSegments= AccelMotionSegment.prototype.calculateBasicSegments(t0,tf,p0,v0,vf,jPct);
-
-		AccelMotionSegment.call(this,basicSegments);
-
-
-	};
-
-	AccelSegmentTimeVelocity.prototype = Object.create(AccelMotionSegment.prototype);
-	AccelSegmentTimeVelocity.prototype.constructor = AccelSegmentTimeVelocity;
-
 
 	/**
 	 * Modifies segment initial values. Used when adding a point in the middle of a segment.
@@ -261,26 +244,111 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 		this.segmentData = {
 			dataPermutation: "time-distance",
-			distance: pf-p0,
-			duration:tf-t0,
+			distance: pf - p0,
+			duration: tf - t0,
 			jerkPercent: jPct
 		};
 
-
-		//need to convert from pf to vf
-		var vf=this.convertToFinalVelocity(t0,tf,p0,pf,v0);
+		var basicSegments = this.calculateBasicSegments(t0, tf, p0, v0, pf, jPct);
 
 
-		var basicSegments = AccelMotionSegment.prototype.calculateBasicSegments(t0, tf, p0, v0, vf, jPct);
-
-
-		AccelMotionSegment.call(this,basicSegments);
+		AccelMotionSegment.call(this, basicSegments);
 
 
 	};
 
 	AccelSegmentTimeDistance.prototype = Object.create(AccelMotionSegment.prototype);
 	AccelSegmentTimeDistance.prototype.constructor = AccelSegmentTimeDistance;
+
+
+	/**
+	 * Calculates and creates the 1 to 3 basic segments that AccelSegment consists of
+	 * @param  {Number} t0   initial time
+	 * @param  {Number} tf   finalt time
+	 * @param  {Number} p0   initial position
+	 * @param  {Number} v0   initial velocity
+	 * @param  {Number} vf   final velocity
+	 * @param  {Number} jPct jerk percentage
+	 * @return {Array}      Array of BasicSegment
+	 */
+	AccelSegmentTimeDistance.prototype.calculateBasicSegments=function(t0,tf,p0,v0,pf,jPct){
+		var basicSegment, basicSegment2, basicSegment3;
+		var accelSegment, aMax;
+		var coeffs, coeffs1, coeffs2, coeffs3, coeffs4;
+		var jerk;
+		var th;
+		if(jPct===0){
+			// consists of one basic segment
+			aMax=(2*(pf-p0))/fastMath.sqr(tf-t0);
+			coeffs=[0,0.5*aMax,v0,p0];
+
+			basicSegment = basicSegmentFactory.CreateBasicSegment(t0,tf,coeffs);
+
+			return [basicSegment];
+		}
+
+		//function to calculate max acceleration for this segment
+		var maxAccel = function(v0) {
+
+			var duration = this.segmentData.duration;
+
+			var t1 = 0.5 * this.segmentData.jerkPercent * (duration);
+			var tm = duration - 2 * (t1);
+			var t2 = t1; //no skew for now
+
+			var sqr = fastMath.sqr;
+
+
+			var numerator = this.segmentData.distance - v0 * (duration);
+
+			var denominator = sqr(t1) / 6 + 0.5 * t1 * tm + 0.5 * sqr(tm) + 0.5 * t1 * t2 + tm * t2 + sqr(t2) / 3;
+
+			var aMax = numerator / denominator;
+
+			return aMax;
+
+		};
+
+
+		aMax = maxAccel.call(this,v0);
+	
+		if(jPct==1){	
+			// two basic segments
+
+			jerk = aMax/th;
+
+			coeffs1=[jerk/6,0,v0,p0];
+
+			basicSegment=basicSegmentFactory.CreateBasicSegment(t0,t0+th,coeffs1);
+	
+			coeffs2=[basicSegment.evaluatePositionAt(t0+th),basicSegment.evaluateVelocityAt(t0+th),aMax/2,-jerk/6];
+	
+			basicSegment2=basicSegmentFactory.CreateBasicSegment(t0+th,tf,coeffs2);
+	
+			return [basicSegment,basicSegment2];
+		}
+
+		// last case is three basic segments
+
+		var td1; //duration of first and third segments
+		var tdm; //duration of the middle segment
+		td1=0.5*jPct*(tf-t0);
+		tdm=tf-t0-2*(td1);
+
+		jerk=aMax/td1;
+
+		coeffs1=[jerk/6,0,v0,p0];
+		basicSegment = basicSegmentFactory.CreateBasicSegment(t0,t0+td1,coeffs1);
+
+		coeffs2=[0, aMax/2,basicSegment.evaluateVelocityAt(t0+td1),basicSegment.evaluatePositionAt(t0+td1)]; // middle segment has no jerk
+		basicSegment2 = basicSegmentFactory.CreateBasicSegment(t0+td1,t0+td1+tdm,coeffs2);
+
+		coeffs3=[-jerk/6, aMax/2,basicSegment2.evaluateVelocityAt(t0+td1+tdm), basicSegment2.evaluatePositionAt(t0+td1+tdm)];
+		basicSegment3 = basicSegmentFactory.CreateBasicSegment(t0+td1+tdm,tf,coeffs3);
+
+
+		return [basicSegment, basicSegment2,basicSegment3];
+	};
 
 
 	/**
@@ -299,11 +367,8 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 
 		var pf=p0+this.segmentData.distance;
-		var vf =this.convertToFinalVelocity(t0,tf,p0,pf,v0);
 
-
-
-		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,vf,this.segmentData.jerkPercent);
+		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,pf,this.segmentData.jerkPercent);
 
 		this.initialTime=newBasicSegments[0].initialTime;
 		this.finalTime=newBasicSegments[newBasicSegments.length-1].finalTime;
@@ -323,22 +388,22 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param  {Number} pf final position
 	 * @return {Number}    calculated final velocity
 	 */
-	AccelSegmentTimeDistance.prototype.convertToFinalVelocity = function(t0,tf,p0,pf,v0) {
+	// AccelSegmentTimeDistance.prototype.convertToFinalVelocity = function(t0,tf,p0,pf,v0) {
 		
-		//t1, tm and t2 are times within trapezoidal velocity
-		var t1Len=0.5*this.segmentData.jerkPercent*(tf-t0);
-		var t1=t0+t1Len;
-		var tm=(tf-t0)-(2 * t1Len);
-		var t2= t1+tm;
-		//var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
+	// 	//t1, tm and t2 are times within trapezoidal velocity
+	// 	var t1Len=0.5*this.segmentData.jerkPercent*(tf-t0);
+	// 	var t1=t0+t1Len;
+	// 	var tm=(tf-t0)-(2 * t1Len);
+	// 	var t2= t1+tm;
+	// 	//var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
 
-		var aMax=(this.segmentData.distance-v0*tf) / (1.5 * t1 * tm + t1*t1 + 0.5 * tm*tm);
+	// 	var aMax=(this.segmentData.distance-v0*tf) / (1.5 * t1 * tm + t1*t1 + 0.5 * tm*tm);
 		
 
-		var vf=v0+aMax*(tf+t2-t1)/2;
+	// 	var vf=v0+aMax*(tf+t2-t1)/2;
 
-		return vf;
-	};
+	// 	return vf;
+	// };
 
 
 
@@ -377,9 +442,6 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 		if (angular.isUndefined(jPct) || jPct < 0 || jPct > 1)
 			throw new Error('expecting jerk between <0,1>');
-
-		this.finalPosition=pf;
-
 
 		var accelSegment = new AccelSegmentTimeDistance(t0, tf, p0, v0, pf, jPct);
 

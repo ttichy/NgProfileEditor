@@ -271,20 +271,23 @@ describe('Unit: accelSegmentFactory testing', function() {
 
   });
 
-  it('should create a time-distance accel segment with non-zero start time (t0=2,tf=4,p0=6,v0=5,pf=10,j=0.5) and evaluate correctly', function() {
+  it('should create a time-distance accel segment with non-zero start time (t0=2,tf=4,p0=6,v0=2,pf=11,j=0.5) and evaluate correctly', function() {
 
 
-
-    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 4, 11, 0.5);
+    //t0, tf, p0, v0, pf, jPct
+    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 2, 11, 0.5);
 
     //quick check the segment
     var segs = seg.getAllSegments();
     expect(segs.length).toBe(3);
 
-    var seg1 = segs[1];
+    var seg1 = segs[0];
+    var seg2 = segs[1];
+    var seg3 = segs[3];
 
-    expect(seg1.evaluatePositionAt(3)).toBeCloseTo(9.25,3);
-    expect(seg1.evaluatePositionAt(4)).toBe(11);
+
+    expect(seg1.evaluatePositionAt(2.5)).toBeCloseTo(7.027777777777778,7);
+    expect(seg1.evaluatePositionAt(2)).toBe(6);
   });
 
 
@@ -310,20 +313,34 @@ describe('Unit: accelSegmentFactory testing', function() {
   });
 
 
-  it('should calculate  max acceleration ', function() {
+//   it('should calculate  max acceleration ', function() {
 
-  //t0, tf, p0, v0, pf, jPct
+//   //t0, tf, p0, v0, pf, jPct
 
-    var seg = accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 0.5);
+//     var seg = accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 0.5);
 
     
-//calculateMaxAccelDistance = function(t0,tf,distance,v0,a0,jPct) {
+// //calculateMaxAccelDistance = function(t0,tf,distance,v0,a0,jPct) {
 
-    var aMax=seg.calculateMaxAccelDistance(4);
+//     var aMax=seg.calculateMaxAccelDistance(4);
 
-    expect(aMax).toBeCloseTo(156.88494152478896,7);
+//     expect(aMax).toBeCloseTo(156.88494152478896,7);
 
 
-  });
+//     var seg1=accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 0);
+
+//     aMax=seg1.calculateMaxAccelDistance(4);
+
+//     expect(aMax).toBeCloseTo(117.66370614359172,7);
+
+
+
+//   var seg2=accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 1);
+
+//   aMax=seg2.calculateMaxAccelDistance(4);
+
+
+
+//   });
 
 });
