@@ -72,6 +72,10 @@ var epsilon = 2.220446049250313e-16;
 				return 0;
 			},
 
+			sqr: function(x){
+				return x*x;
+			},
+
 			trunc: function(a) {
 				var num = parseInt(a, 10);
 				if (isNaN(num)) {

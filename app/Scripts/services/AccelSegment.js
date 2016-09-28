@@ -86,6 +86,25 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	};
 
 
+	AccelMotionSegment.prototype.calculateMaxAccelDistance = function(v0) {
+		
+		var duration = this.finalTime-this.initialTime;
+
+		var t1=0.5*this.segmentData.jerkPercent*(duration);
+		var tm=duration-2*(t1);
+		var t2=t1;	//no skew for now
+
+		var sqr=fastMath.sqr;
+
+
+		var numerator=this.segmentData.distance - v0*(duration);
+
+		var denominator = sqr(t1)/6 +0.5*t1*tm+0.5*sqr(tm)+0.5*t1*t2+tm*t2+sqr(t2)/3;
+
+		var aMax=numerator/denominator;
+
+	};
+
 
 /**
 	 * Calculates and creates the 1 to 3 basic segments that AccelSegment consists of
@@ -305,10 +324,16 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @return {Number}    calculated final velocity
 	 */
 	AccelSegmentTimeDistance.prototype.convertToFinalVelocity = function(t0,tf,p0,pf,v0) {
-		var t1=0.5*this.segmentData.jerkPercent*(tf-t0);
-		var tm=(tf-t0)-2 * t1;
+		
+		//t1, tm and t2 are times within trapezoidal velocity
+		var t1Len=0.5*this.segmentData.jerkPercent*(tf-t0);
+		var t1=t0+t1Len;
+		var tm=(tf-t0)-(2 * t1Len);
 		var t2= t1+tm;
-		var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
+		//var aMax=(pf-p0 - v0 * (tf-t0))/(1.5*t1*tm+t1*t1 + 0.5* tm*tm);
+
+		var aMax=(this.segmentData.distance-v0*tf) / (1.5 * t1 * tm + t1*t1 + 0.5 * tm*tm);
+		
 
 		var vf=v0+aMax*(tf+t2-t1)/2;
 
