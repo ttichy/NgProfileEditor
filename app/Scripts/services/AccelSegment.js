@@ -455,14 +455,15 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {[type]} v0 [final position]
 	 * @param {[type]} vf [final velocity]
 	 * @param {[type]} jPct  [jerk as a percent of time]
+	 * @param {string} mode incremental or absolute
 	 * @returns {AccelMotionSegment} [freshly created accel segment]
 	 */
-	factory.MakeFromTimeVelocity= function(t0,tf,p0,v0,vf,jPct){
+	factory.MakeFromTimeVelocity= function(t0,tf,p0,v0,vf,jPct,mode){
 
 		if(angular.isUndefined(jPct) || jPct<0 || jPct>1)
 			throw new Error('expecting jerk between <0,1>');
 		
-		var accelSegment = new AccelSegmentTimeVelocity(t0,tf,p0,v0,vf,jPct);
+		var accelSegment = new AccelSegmentTimeVelocity(t0,tf,p0,v0,vf,jPct,mode);
 
 		return accelSegment;
 
