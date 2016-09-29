@@ -201,7 +201,10 @@ it('should create an absolute time-velocity accel segment (t0=2,tf=4,p0=6,v0=5,p
     expect(seg3.initialTime).toBe(3.25);
     expect(seg3.finalTime).toBe(4);
     expect(seg3.evaluatePositionAt(3.25)).toBeCloseTo(22.70833333322,4);
+    expect(seg3.evaluateVelocityAt(3.25)).toBeCloseTo(1.16666666666,6);
+
     expect(seg3.evaluatePositionAt(4)).toBeCloseTo(22.5,6);
+    expect(seg3.evaluateVelocityAt(4)).toBeCloseTo(-1,6);
 
   });
 
