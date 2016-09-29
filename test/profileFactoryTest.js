@@ -20,25 +20,25 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('should create an empty rotary profile', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         expect(profile.ProfileType).toBe('rotary');
-        expect(profile.GetAllBasicSegments.length).toBe(0);
+        expect(profile.getAllBasicSegments.length).toBe(0);
     });
 
 
     it('should create an empty linear profile', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("linear");
+        var profile = motionProfileFactory.createMotionProfile("linear");
 
         expect(profile.ProfileType).toBe('linear');
-        expect(profile.GetAllBasicSegments.length).toBe(0);
+        expect(profile.getAllBasicSegments.length).toBe(0);
     });
 
 
     xit('should add 2 accel segments to the profile and have 6 basic segments total', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -47,10 +47,10 @@ describe('Unit: motionProfileFactory testing', function() {
         accelSegment = accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 10, 0, 0.5);
 
         profile.PutSegment(accelSegment);
-        expect(profile.GetAllBasicSegments().length).toBe(6);
+        expect(profile.getAllBasicSegments().length).toBe(6);
 
 
-        var segments = profile.GetAllBasicSegments();
+        var segments = profile.getAllBasicSegments();
         var seg0 = segments[0];
         expect(seg0.initialTime).toBe(0);
         expect(seg0.finalTime).toBe(0.5);
@@ -78,21 +78,21 @@ describe('Unit: motionProfileFactory testing', function() {
 
     xit('should correctly place an accel segment within another accel segment, slicing the existing segment correctly', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
         profile.PutSegment(accelSegment);
 
-        var segments = profile.GetAllBasicSegments();
+        var segments = profile.getAllBasicSegments();
 
 
         accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 1, 0, 0, 7.5, 0.5);
 
         profile.PutSegment(accelSegment);
-        expect(profile.GetAllBasicSegments().length).toBe(6);
+        expect(profile.getAllBasicSegments().length).toBe(6);
 
-        segments = profile.GetAllBasicSegments();
+        segments = profile.getAllBasicSegments();
 
         var seg1 = segments[0];
         expect(seg1.initialTime).toBe(0);
@@ -184,7 +184,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('should correctly delete an accel segment that is the last segment', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -196,9 +196,9 @@ describe('Unit: motionProfileFactory testing', function() {
 
         profile.appendSegment(accelSegment);
 
-        profile.DeleteSegment(accelSegment.id);
+        profile.deleteSegment(accelSegment.id);
 
-        var segments = profile.GetAllSegments();
+        var segments = profile.getAllSegments();
 
         expect(segments.length).toBe(1);
 
@@ -209,14 +209,14 @@ describe('Unit: motionProfileFactory testing', function() {
         expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777, 4);
 
         //also, the profile needs to be valid
-        expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
+        expect(ph.validateBasicSegments(profile.getAllBasicSegments())).toBe(true);
 
 
     });
 
         it('should correctly delete an accel segment that is NOT the last segment', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -238,9 +238,9 @@ describe('Unit: motionProfileFactory testing', function() {
         profile.appendSegment(accelSegment);
 
 
-        profile.DeleteSegment(accelSegmentDelete.id);
+        profile.deleteSegment(accelSegmentDelete.id);
 
-        var segments = profile.GetAllSegments();
+        var segments = profile.getAllSegments();
 
         expect(segments.length).toBe(3);
 
@@ -251,7 +251,7 @@ describe('Unit: motionProfileFactory testing', function() {
         expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.277777, 4);
 
         //also, the profile needs to be valid
-        expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
+        expect(ph.validateBasicSegments(profile.getAllBasicSegments())).toBe(true);
 
 
 
@@ -261,7 +261,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
         it('should correctly delete an accel segment the first segment', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegmentDelete = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -283,9 +283,9 @@ describe('Unit: motionProfileFactory testing', function() {
         profile.appendSegment(accelSegment);
 
 
-        profile.DeleteSegment(accelSegmentDelete.id);
+        profile.deleteSegment(accelSegmentDelete.id);
 
-        var segments = profile.GetAllSegments();
+        var segments = profile.getAllSegments();
 
         expect(segments.length).toBe(3);
 
@@ -296,7 +296,7 @@ describe('Unit: motionProfileFactory testing', function() {
         expect(seg0.EvaluatePositionAt(0.5)).toBeCloseTo(0.72916, 4);
 
         //also, the profile needs to be valid
-        expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
+        expect(ph.validateBasicSegments(profile.getAllBasicSegments())).toBe(true);
 
 
 
@@ -308,7 +308,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('should correctly find existing segments with exact matches', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -318,10 +318,10 @@ describe('Unit: motionProfileFactory testing', function() {
 
         profile.appendSegment(accelSegment2);
 
-        var existing = profile.GetExistingSegment(0);
+        var existing = profile.getExistingSegment(0);
         expect(existing.initialTime).toBe(0);
 
-        existing = profile.GetExistingSegment(2);
+        existing = profile.getExistingSegment(2);
         expect(existing.initialTime).toBe(2);
 
     });
@@ -329,7 +329,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('should not find any segments before and after the existing profile segment range', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -339,10 +339,10 @@ describe('Unit: motionProfileFactory testing', function() {
 
         profile.appendSegment(accelSegment2);
 
-        var existing = profile.GetExistingSegment(1);
+        var existing = profile.getExistingSegment(1);
         expect(existing).toBe(null);
 
-        existing = profile.GetExistingSegment(3);
+        existing = profile.getExistingSegment(3);
         expect(existing).toBe(null);
 
     });
@@ -350,7 +350,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('should find existing segments, even if initialTime is off by some number less than epsilon', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -360,11 +360,11 @@ describe('Unit: motionProfileFactory testing', function() {
 
         profile.appendSegment(accelSegment2);
 
-        var existing = profile.GetExistingSegment(0-fastMath.epsilon/2);
+        var existing = profile.getExistingSegment(0-fastMath.epsilon/2);
         expect(existing).not.toBe(null);
         expect(existing.initialTime).toBe(accelSegment1.initialTime);
 
-        existing = profile.GetExistingSegment(2+fastMath.epsilon/2);
+        existing = profile.getExistingSegment(2+fastMath.epsilon/2);
         expect(existing).toBe(accelSegment2);
 
     });
@@ -372,7 +372,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('should insert a segment in between two other segments', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
@@ -384,15 +384,15 @@ describe('Unit: motionProfileFactory testing', function() {
 
         var accelSegment3=accelSegmentFactory.MakeFromTimeVelocity(2, 4, 10, 5, 0, 0.5);
 
-        profile.InsertSegment(accelSegment3,accelSegment2.id);
+        profile.insertSegment(accelSegment3,accelSegment2.id);
 
         //after inserting, there should be 3 segments total
-        expect(profile.GetAllSegments().length).toBe(3);
+        expect(profile.getAllSegments().length).toBe(3);
 
-        var allBasicSegments=profile.GetAllBasicSegments();
+        var allBasicSegments=profile.getAllBasicSegments();
 
         //also, the profile needs to be valid
-        expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
+        expect(ph.validateBasicSegments(profile.getAllBasicSegments())).toBe(true);
 
 
 
@@ -401,7 +401,7 @@ describe('Unit: motionProfileFactory testing', function() {
 
     it('appending a segment should match final conditions of the previous segment ', function() {
 
-        var profile = motionProfileFactory.CreateMotionProfile("rotary");
+        var profile = motionProfileFactory.createMotionProfile("rotary");
 
         var accelSegment1 = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 5, 0.5);
 
@@ -412,10 +412,10 @@ describe('Unit: motionProfileFactory testing', function() {
         profile.appendSegment(accelSegment2);
 
 
-        var allBasicSegments=profile.GetAllBasicSegments();
+        var allBasicSegments=profile.getAllBasicSegments();
 
         //also, the profile needs to be valid
-        expect(ph.validateBasicSegments(profile.GetAllBasicSegments())).toBe(true);
+        expect(ph.validateBasicSegments(profile.getAllBasicSegments())).toBe(true);
 
 
 

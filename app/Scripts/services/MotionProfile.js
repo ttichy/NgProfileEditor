@@ -14,11 +14,6 @@ var app=angular.module('profileEditor');
 app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath','ProfileHelper',
  function(MotionSegment, SegmentStash, fastMath, profileHelper) {
 
-	var factory = {};
-
-	factory.CreateMotionProfile=function(type){
-		return new MotionProfile(type);
-	};
 
 	/*
 	MOTION PROFILE OBJECT LOGIC
@@ -57,7 +52,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	/**
 	 * Gets all basic segments that exist in the profile. Basic Segments are the most basic building blocks
 	 */
-	MotionProfile.prototype.GetAllBasicSegments = function() {
+	MotionProfile.prototype.getAllBasicSegments = function() {
 		var allSegments=[];
 		// using associative array to hold all segments -> quick and easy to search
 		this.segments.getAllSegments().forEach(function(element){
@@ -70,7 +65,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
   		});
 	};
 
-	MotionProfile.prototype.GetAllSegments = function() {
+	MotionProfile.prototype.getAllSegments = function() {
 		return this.segments.getAllSegments();
 	};
 
@@ -80,7 +75,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	 * @param {number} initialTime initial time of segment to check
 	 * @returns {MotionSegment} existing segment or null if none found
 	 */
-	MotionProfile.prototype.GetExistingSegment = function(initialTime){
+	MotionProfile.prototype.getExistingSegment = function(initialTime){
 
 		return this.segments.findSegmentWithInitialTime(initialTime);
 	};
@@ -89,7 +84,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	 * Inserts or appends a segment into the motion profile
 	 * @param {MotionSegment} segment Segment to insert into the profile
 	 */
-	MotionProfile.prototype.InsertSegment=function(segment,segmentId) {
+	MotionProfile.prototype.insertSegment=function(segment,segmentId) {
 		
 		if(!(segment instanceof MotionSegment.MotionSegment))
 			throw new Error('Attempting to insert an object which is not a MotionSegment');
@@ -149,7 +144,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 	MotionProfile.prototype.PutSegment = function(segment) {
 
 		// is there already a segment at this initial time?	
-		var existing=this.GetExistingSegment(segment.initialTime);
+		var existing=this.getExistingSegment(segment.initialTime);
 
 		if (angular.isObject(existing)) {
 			//logic to insert the segment
@@ -189,17 +184,18 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		}
 
 		//validate all segments
-		profileHelper.validateBasicSegments(this.GetAllBasicSegments());
+		profileHelper.validateBasicSegments(this.getAllBasicSegments());
 		//TODO: explore faster way to validate profile segments
 
 	};
+	
 
 	/**
 	 * Deletes specified segment. Suppose we have segments 1, 2 and 3 and want to delete 2.
 	 * 	First, we delete segment 2. Then, we modify the initial values of segment 3 to be the final values of segment 1
 	 * @param {MotionSegment} segmentId identify segment to delete
 	 */
-	MotionProfile.prototype.DeleteSegment = function(segmentId) {
+	MotionProfile.prototype.deleteSegment = function(segmentId) {
 
 		if(!fastMath.isNumeric(segmentId) || fastMath.lt(segmentId,0))
 			throw new Error('expect segmentId to be a positive integer');
@@ -240,6 +236,13 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		return segToDelete;
 
 	};
+
+	var factory = {};
+
+	factory.createMotionProfile=function(type){
+		return new MotionProfile(type);
+	};
+
 
 
 	return factory;

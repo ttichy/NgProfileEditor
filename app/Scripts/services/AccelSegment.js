@@ -82,7 +82,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 
 	AccelMotionSegment.prototype.getAll = function() {
-		return this.segments.GetAllSegments();
+		return this.segments.getAllSegments();
 	};
 
 

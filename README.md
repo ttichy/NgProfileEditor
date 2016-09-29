@@ -18,10 +18,12 @@ To get you started you can simply clone the ngProfileEditor project and install 
 
 You need to be using [angular][angular] and use ngProfileEditor as a module
 
-ngProfileEditor will expose various functions and objects to build a motion profile.
 
+### Usage
 
+ngProfileEditor exposes various functions and objects to build a motion profile.
 
+Please see the test folder for various unit tests that show by example how to create segments and put them into a profile
 
 ## Contact
 

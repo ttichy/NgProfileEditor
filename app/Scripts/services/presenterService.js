@@ -19,7 +19,7 @@ app.service('presenterService',['motionProfileFactory', 'graphProxy', function(m
 	 * Creates and registeres a linear profile
 	 */
 	service.CreateLinearProfile = function(){
-		var profile=motionProfileFactory.CreateMotionProfile("linear");
+		var profile=motionProfileFactory.createMotionProfile("linear");
 		registeredGraphs.motion=profile;
 	};
 
@@ -28,7 +28,7 @@ app.service('presenterService',['motionProfileFactory', 'graphProxy', function(m
 	 * Creates and registeres a rotary profile
 	 */
 	service.CreateRotaryprofile=function(){
-		var profile=motionProfileFactory.CreateMotionProfile("rotary");
+		var profile=motionProfileFactory.createMotionProfile("rotary");
 		registeredGraphs.motion=profile;
 	};
 

@@ -30,7 +30,7 @@ xdescribe('Unit: profile helper functions-', function() {
 
 
   it('profile helper should validate basic segments in a valid profile', function() {
-    var profile=motionProfileFactory.CreateMotionProfile("rotary");
+    var profile=motionProfileFactory.createMotionProfile("rotary");
 
     var accelSegment=accelSegmentFactory.MakeFromTimeVelocity(0,2,0,0,10,0.5);
 
@@ -40,7 +40,7 @@ xdescribe('Unit: profile helper functions-', function() {
     
     profile.AppendSegment(accelSegment);
 
-    ph.validateBasicSegments(profile.GetAllBasicSegments());
+    ph.validateBasicSegments(profile.getAllBasicSegments());
 
 
   });
