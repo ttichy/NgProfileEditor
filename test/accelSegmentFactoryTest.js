@@ -227,11 +227,11 @@ describe('Unit: accelSegmentFactory testing', function() {
 
 
 
-  it('should create a time-distance accel segment (t0=2,tf=4,p0=6,v0=5,pf=10,j=0), modify initial time, position AND velocity and evaluate correctly', function() {
+  it('should create an incremental time-distance accel segment (t0=2,tf=4,p0=6,v0=5,pf=10,j=0), modify initial time, position AND velocity and evaluate correctly', function() {
 
 
     //t0, tf, p0, v0, pf, jPct
-    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 6, 11, 0.5);
+    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 6, 11, 0.5,"incremental");
 
     //quick check the segment
     var segs = seg.getAllSegments();
@@ -272,6 +272,53 @@ describe('Unit: accelSegmentFactory testing', function() {
     expect(seg3.evaluatePositionAt(3)).toBe(11);
 
   });
+
+
+it('should create an absolute time-distance accel segment (t0=2,tf=4,p0=6,v0=5,pf=10,j=0), modify initial time, position AND velocity and evaluate correctly', function() {
+
+
+    //t0, tf, p0, v0, pf, jPct
+    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 6, 11, 0.5,"absolute");
+
+    //quick check the segment
+    var segs = seg.getAllSegments();
+    expect(segs.length).toBe(3);
+
+    var seg2 = segs[1];
+    var seg3=seg[2];
+
+    expect(seg2.evaluatePositionAt(3)).toBeCloseTo(10.6388888888,6);
+    expect(seg2.evaluatePositionAt(3.5)).toBeCloseTo(11.305555555555,5);
+    
+
+     var t0=1,a0=0,v0=12,p0=6;
+
+    seg.modifyInitialValues(t0,a0,v0,p0);
+
+    segs=seg.getAllSegments();
+
+    var seg1 = segs[0];
+    seg2 = segs[1];
+    seg3 = segs[2];
+
+
+    expect(seg1.initialTime).toBe(1);
+    expect(seg1.finalTime).toBe(1.75);
+    expect(seg1.evaluatePositionAt(1)).toBe(6);
+    expect(seg1.evaluatePositionAt(1.75)).toBeCloseTo(14.1388888888888,4);
+
+    expect(seg2.initialTime).toBe(1.75);
+    expect(seg2.finalTime).toBe(3.25);
+    expect(seg2.evaluatePositionAt(1.75)).toBeCloseTo(14.1388888888888,4);
+    expect(seg2.evaluatePositionAt(3.25)).toBeCloseTo(16.638888888888886,4);
+
+
+    expect(seg3.initialTime).toBe(3.25);
+    expect(seg3.finalTime).toBe(4);
+    expect(seg3.evaluatePositionAt(3.25)).toBeCloseTo(16.6388888888888862,4);
+    expect(seg3.evaluatePositionAt(4)).toBeCloseTo(11,5);
+
+  });  
 
   it('should create a time-distance accel segment with non-zero start time (t0=2,tf=4,p0=6,v0=2,pf=11,j=0.5) and evaluate correctly', function() {
 
@@ -315,34 +362,5 @@ describe('Unit: accelSegmentFactory testing', function() {
   });
 
 
-//   it('should calculate  max acceleration ', function() {
-
-//   //t0, tf, p0, v0, pf, jPct
-
-//     var seg = accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 0.5);
-
-    
-// //calculateMaxAccelDistance = function(t0,tf,distance,v0,a0,jPct) {
-
-//     var aMax=seg.calculateMaxAccelDistance(4);
-
-//     expect(aMax).toBeCloseTo(156.88494152478896,7);
-
-
-//     var seg1=accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 0);
-
-//     aMax=seg1.calculateMaxAccelDistance(4);
-
-//     expect(aMax).toBeCloseTo(117.66370614359172,7);
-
-
-
-//   var seg2=accelSegmentFactory.MakeFromTimeDistance(0, 1, 0, 4, 20*Math.PI, 1);
-
-//   aMax=seg2.calculateMaxAccelDistance(4);
-
-
-
-//   });
 
 });

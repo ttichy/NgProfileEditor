@@ -116,12 +116,16 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	};
 
 
-	var AccelSegmentTimeVelocity = function(t0,tf,p0,v0,vf,jPct) {
+	var AccelSegmentTimeVelocity = function(t0,tf,p0,v0,vf,jPct,mode) {
 
-		var dataPermutation="time-velocity";
+		if(mode!=="absolute")
+			mode="incremental";
+
 		this.segmentData = {
 			dataPermutation: "time-velocity",
+			mode: mode,
 			finalVelocity: vf,
+			finalTime: tf,
 			duration:tf-t0,
 			jerkPercent:jPct
 		};
@@ -213,7 +217,8 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 
 
 	/**
-	 * Modifies segment initial values. Used when adding a point in the middle of a segment.
+	 * Modifies segment initial values. Used when a segment in a profile is changed.
+	 * Modification takes into account absolute vs incremental mode
 	 * @param {float} t0 new initial time
 	 * @param {float} a0 new initial acceleration
 	 * @param {float} v0 new initial velocity
@@ -221,8 +226,17 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 */
 	AccelSegmentTimeVelocity.prototype.modifyInitialValues=function(t0,a0,v0,p0){
 		
+		var tf;
 
-		var tf=t0+this.segmentData.duration;
+		if (this.segmentData.mode === "incremental") {
+			tf = t0 + this.segmentData.duration;
+		} else {
+			tf=this.segmentData.finalTime;
+			this.segmentData.duration=tf-t0;
+
+			if(fastMath.lt(this.segmentData.duration,0))
+				throw new Error('tried to move initial time past final time for absolute segment');
+		}
 
 		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,this.segmentData.finalVelocity,this.segmentData.jerkPercent);
 
@@ -238,14 +252,30 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	};
 
 
+	/**
+	 * Acceleration segment that is based on time and distance.
+	 * When initial conditions change, it is recalculated such that the duration and final position stay the same
+	 * @param {Number} t0   initial time
+	 * @param {Number} tf   final time
+	 * @param {Number} p0   initial position
+	 * @param {Number} v0   initial velocity
+	 * @param {Number} pf   final position
+	 * @param {Number} jPct percent jerk
+	 * @param {string} mode absolute or incremental
+	 */
+	var AccelSegmentTimeDistance = function(t0,tf,p0,v0,pf,jPct,mode) {
+		if(mode!=="absolute")
+			mode="incremental";
 
-	var AccelSegmentTimeDistance = function(t0,tf,p0,v0,pf,jPct) {
-
+		//incremental and absolute segments are instantiated the same way
 
 		this.segmentData = {
 			dataPermutation: "time-distance",
+			finalPosition: pf,
+			finalTime: tf,
 			distance: pf - p0,
 			duration: tf - t0,
+			mode: mode,
 			jerkPercent: jPct
 		};
 
@@ -360,13 +390,23 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 */
 	AccelSegmentTimeDistance.prototype.modifyInitialValues=function(t0,a0,v0,p0){
 		
-		//these are the original values.... we may be modifying them
-		var tf_old=this.segments.lastSegment().finalTime;
+		var tf_old,tf,pf;
 
-		var tf=t0+this.segmentData.duration;
+		if(this.segmentData.mode==="incremental"){
+			tf_old=this.segments.lastSegment().finalTime;
+			tf=t0+this.segmentData.duration;
+			pf=p0+this.segmentData.distance;
+		}
+		else {
+			//absolute mode
+			tf=this.segmentData.finalTime;
+			this.segmentData.duration=tf-t0;
+			pf=this.segmentData.finalPosition;
+			if(fastMath.lt(this.segmentData.duration,0))
+				throw new Error("attempt to change initial time past final time for absolute segment");
+		}
 
 
-		var pf=p0+this.segmentData.distance;
 
 		var newBasicSegments = this.calculateBasicSegments(t0,tf,p0,v0,pf,this.segmentData.jerkPercent);
 
@@ -438,12 +478,13 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {Number} jPct  [jerk as a percent of time]
 	 * @returns {AccelMotionSegment} [freshly created accel segment]
 	 */
-	factory.MakeFromTimeDistance = function(t0, tf, p0, v0, pf, jPct) {
+	factory.MakeFromTimeDistance = function(t0, tf, p0, v0, pf, jPct,mode) {
 
 		if (angular.isUndefined(jPct) || jPct < 0 || jPct > 1)
 			throw new Error('expecting jerk between <0,1>');
+		//TODO: more parameter checks
 
-		var accelSegment = new AccelSegmentTimeDistance(t0, tf, p0, v0, pf, jPct);
+		var accelSegment = new AccelSegmentTimeDistance(t0, tf, p0, v0, pf, jPct,mode);
 
 		return accelSegment;
 
