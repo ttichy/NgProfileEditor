@@ -116,7 +116,7 @@ app.factory('indexSegmentFactory', ['AccelSegment','FastMath', function(accelSeg
 	 * @param {float} v0 new initial velocity
 	 * @param {float} p0 new initial position
 	 */
-	AccelMotionSegment.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
+	AccelMotionSegment.prototype.modifyInitialValues=function(t0,a0,v0,p0){
 		var last=this.basicSegments.length-1;
 		var tf=this.basicSegments[last].finalTime;
 		var af = this.EvaluateAccelerationAt(tf);

@@ -219,7 +219,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {float} v0 new initial velocity
 	 * @param {float} p0 new initial position
 	 */
-	AccelSegmentTimeVelocity.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
+	AccelSegmentTimeVelocity.prototype.modifyInitialValues=function(t0,a0,v0,p0){
 		
 
 		var tf=t0+this.segmentData.duration;
@@ -358,7 +358,7 @@ app.factory('AccelSegment', ['MotionSegment','basicSegmentFactory','FastMath', f
 	 * @param {float} v0 new initial velocity
 	 * @param {float} p0 new initial position
 	 */
-	AccelSegmentTimeDistance.prototype.ModifyInitialValues=function(t0,a0,v0,p0){
+	AccelSegmentTimeDistance.prototype.modifyInitialValues=function(t0,a0,v0,p0){
 		
 		//these are the original values.... we may be modifying them
 		var tf_old=this.segments.lastSegment().finalTime;

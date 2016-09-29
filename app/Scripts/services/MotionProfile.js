@@ -99,7 +99,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 
 		//modify the segment being inserted to make sure initial values == previous segment's final values
 		var lastValues=prev.getFinalValues();
-		segment.ModifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);
+		segment.modifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);
 
 		var newSegment=this.segments.insertAt(segment,segmentId);
 		if(!newSegment)
@@ -110,7 +110,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		while(current){
 			prev=this.segments.getPreviousSegment(current.id);
 			lastValues=prev.getFinalValues();
-			current.ModifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);
+			current.modifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);
 
 			//move next
 			current=this.segments.getNextSegment(current.id);
@@ -134,7 +134,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 		var lastSegment=this.segments.lastSegment();
 		if(lastSegment){
 			var lastValues=lastSegment.getFinalValues();
-			segment.ModifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);			
+			segment.modifyInitialValues(lastValues[0],lastValues[1],lastValues[2],lastValues[3]);			
 		}
 
 
@@ -166,7 +166,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 			var p0=segment.EvaluatePositionAt(t0);
 			var v0=segment.EvaluateVelocityAt(t0);
 			var a0=segment.EvaluateAccelerationAt(t0);
-			var remainder = existing.ModifyInitialValues(t0,a0,v0,p0);
+			var remainder = existing.modifyInitialValues(t0,a0,v0,p0);
 
 			var pos=this.SegmentKeys.indexOf(segment.initialTime);
 			if(pos<0)
@@ -227,7 +227,7 @@ app.factory('motionProfileFactory', ['MotionSegment', 'SegmentStash','FastMath',
 
 		while(current){
 			
-			current.ModifyInitialValues(previousValues[0],previousValues[1],previousValues[2],previousValues[3]);
+			current.modifyInitialValues(previousValues[0],previousValues[1],previousValues[2],previousValues[3]);
 
 			//move forward
 			previous=current;

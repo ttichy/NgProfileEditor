@@ -72,7 +72,7 @@ describe('Unit: accelSegmentFactory testing', function() {
 
     var seg = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
-    var newSeg = seg.ModifyInitialValues(0, 0, 0, 1);
+    var newSeg = seg.modifyInitialValues(0, 0, 0, 1);
 
 
     var seg1 = newSeg.getAllSegments()[0];
@@ -102,7 +102,7 @@ describe('Unit: accelSegmentFactory testing', function() {
 
     var seg = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
-    seg.ModifyInitialValues(0, 0, 1, 0);
+    seg.modifyInitialValues(0, 0, 1, 0);
 
 
     var seg1 = seg.getAllSegments()[0];
@@ -132,7 +132,7 @@ describe('Unit: accelSegmentFactory testing', function() {
 
     var seg = accelSegmentFactory.MakeFromTimeVelocity(0, 2, 0, 0, 10, 0.5);
 
-    seg.ModifyInitialValues(0, 0, 1, 1);
+    seg.modifyInitialValues(0, 0, 1, 1);
 
 
     var seg1 = seg.getAllSegments()[0];
@@ -199,7 +199,7 @@ describe('Unit: accelSegmentFactory testing', function() {
 
     var t0=0,a0=0,v0=1,p0=1;
 
-    seg.ModifyInitialValues(t0,a0,v0,p0);
+    seg.modifyInitialValues(t0,a0,v0,p0);
 
 
     var seg1 = seg.getAllSegments()[0];
@@ -227,47 +227,49 @@ describe('Unit: accelSegmentFactory testing', function() {
 
 
 
-  xit('should create a time-distance accel segment (t0=2,tf=4,p0=6,v0=5,pf=10,j=0), modify initial time, position AND velocity and evaluate correctly', function() {
+  it('should create a time-distance accel segment (t0=2,tf=4,p0=6,v0=5,pf=10,j=0), modify initial time, position AND velocity and evaluate correctly', function() {
 
 
-
-    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 4, 11, 0.5);
+    //t0, tf, p0, v0, pf, jPct
+    var seg = accelSegmentFactory.MakeFromTimeDistance(2, 4, 6, 6, 11, 0.5);
 
     //quick check the segment
     var segs = seg.getAllSegments();
     expect(segs.length).toBe(3);
 
-    var seg1 = segs[1];
+    var seg2 = segs[1];
+    var seg3=seg[2];
 
-    expect(seg1.evaluatePositionAt(3)).toBeCloseTo(9.25,3);
-    expect(seg1.evaluatePositionAt(4)).toBe(11);
+    expect(seg2.evaluatePositionAt(3)).toBeCloseTo(10.6388888888,6);
+    expect(seg2.evaluatePositionAt(3.5)).toBeCloseTo(11.305555555555,5);
     
 
-    // var t0=1,a0=0,v0=1,p0=1;
+     var t0=1,a0=0,v0=12,p0=6;
 
-    // seg.ModifyInitialValues(t0,a0,v0,p0);
+    seg.modifyInitialValues(t0,a0,v0,p0);
 
+    segs=seg.getAllSegments();
 
-    // seg1 = seg.getAllSegments()[0];
-    // var seg2 = seg.getAllSegments()[1];
-    // var seg3 = seg.getAllSegments()[2];
-
-
-    // expect(seg1.initialTime).toBe(0);
-    // expect(seg1.finalTime).toBe(0.5);
-    // expect(seg1.evaluatePositionAt(0)).toBe(1);
-    // expect(seg1.evaluatePositionAt(0.5)).toBeCloseTo(1.722222,4);
-
-    // expect(seg2.initialTime).toBe(0.5);
-    // expect(seg2.finalTime).toBe(1.5);
-    // expect(seg2.evaluatePositionAt(0.5)).toBeCloseTo(1.722222,4);
-    // expect(seg2.evaluatePositionAt(1.5)).toBeCloseTo(6.722222,4);
+    var seg1 = segs[0];
+    seg2 = segs[1];
+    seg3 = segs[2];
 
 
-    // expect(seg3.initialTime).toBe(1.5);
-    // expect(seg3.finalTime).toBe(2);
-    // expect(seg3.evaluatePositionAt(1.5)).toBeCloseTo(6.722222,4);
-    // expect(seg3.evaluatePositionAt(2)).toBe(11);
+    expect(seg1.initialTime).toBe(1);
+    expect(seg1.finalTime).toBe(1.5);
+    expect(seg1.evaluatePositionAt(1)).toBe(6);
+    expect(seg1.evaluatePositionAt(1.5)).toBeCloseTo(11.47222222,4);
+
+    expect(seg2.initialTime).toBe(1.5);
+    expect(seg2.finalTime).toBe(2.5);
+    expect(seg2.evaluatePositionAt(1.5)).toBeCloseTo(11.4722222,4);
+    expect(seg2.evaluatePositionAt(2.5)).toBeCloseTo(13.9722222,4);
+
+
+    expect(seg3.initialTime).toBe(2.5);
+    expect(seg3.finalTime).toBe(3);
+    expect(seg3.evaluatePositionAt(2.5)).toBeCloseTo(13.9722222,4);
+    expect(seg3.evaluatePositionAt(3)).toBe(11);
 
   });
 
